@@ -241,4 +241,80 @@ exports.getSLAReport = async (req, res) => {
   }
 };
 
+/**
+ * Get enhanced SLA metrics (new service)
+ * GET /api/sla/enhanced/metrics
+ */
+exports.getEnhancedSLAMetrics = async (req, res) => {
+  try {
+    const slaTrackingService = require('../services/slaTracking.service');
+    const metrics = await slaTrackingService.getSLAMetrics();
+
+    return res.json({
+      message: 'SLA metrics retrieved',
+      data: metrics,
+      lastUpdated: new Date()
+    });
+  } catch (error) {
+    console.error('Error getting enhanced SLA metrics:', error);
+    res.status(500).json({ error: 'Failed to get SLA metrics' });
+  }
+};
+
+/**
+ * Get issues at risk of SLA breach
+ * GET /api/sla/at-risk
+ */
+exports.getIssuesAtRisk = async (req, res) => {
+  try {
+    const slaTrackingService = require('../services/slaTracking.service');
+    const result = await slaTrackingService.getIssuesAtRisk();
+
+    return res.json({
+      message: 'At-risk issues retrieved',
+      data: result,
+      lastUpdated: new Date()
+    });
+  } catch (error) {
+    console.error('Error getting at-risk issues:', error);
+    res.status(500).json({ error: 'Failed to get at-risk issues' });
+  }
+};
+
+/**
+ * Check all issues for SLA breaches and send alerts
+ * POST /api/sla/check-all-breaches
+ * Admin only
+ */
+exports.checkAllSLABreach = async (req, res) => {
+  try {
+    const slaTrackingService = require('../services/slaTracking.service');
+    const notificationService = require('../services/notification.service');
+
+    const result = await slaTrackingService.checkAllIssuesForSLABreach();
+
+    // Send notifications for breached issues
+    for (const issue of result.breachedIssues) {
+      await notificationService.notifySLABreached(issue);
+    }
+
+    // Send alerts for at-risk issues
+    for (const atRiskItem of result.atRiskIssues) {
+      await notificationService.notifySLAAtRisk(atRiskItem.issue, atRiskItem.percentageUsed);
+    }
+
+    return res.json({
+      message: 'SLA check completed',
+      data: {
+        breachedCount: result.breachedCount,
+        atRiskCount: result.atRiskCount,
+        notificationsSent: result.breachedCount + result.atRiskCount
+      }
+    });
+  } catch (error) {
+    console.error('Error checking all SLA breaches:', error);
+    res.status(500).json({ error: 'Failed to check SLA breaches' });
+  }
+};
+
 module.exports = exports;

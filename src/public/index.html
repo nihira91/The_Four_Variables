@@ -11,6 +11,7 @@
           colors: {
             primary: '#00b7a8',
             secondary: '#009fbe',
+            accent: '#ff6b35',
           }
         }
       }
@@ -19,42 +20,95 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
     
     * {
       font-family: 'Poppins', sans-serif;
     }
 
-    .gradient-text {
-      background: linear-gradient(135deg, #00b7a8 0%, #009fbe 100%);
+    h1, h2, h3 {
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* Premium Gradients */
+    .gradient-premium {
+      background: linear-gradient(135deg, #00b7a8 0%, #009fbe 50%, #0d7377 100%);
+    }
+
+    .gradient-text-premium {
+      background: linear-gradient(135deg, #00b7a8 0%, #ff6b35 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
 
-    .animate-float {
-      animation: float 3s ease-in-out infinite;
+    /* Glassmorphism Effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    @keyframes float {
+    .glass-dark {
+      background: rgba(13, 115, 119, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 183, 168, 0.2);
+    }
+
+    /* Advanced Animations */
+    .animate-float-slow {
+      animation: float-slow 6s ease-in-out infinite;
+    }
+
+    @keyframes float-slow {
       0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(-20px); }
+      50% { transform: translateY(-30px); }
     }
 
-    .card-hover {
-      transition: all 0.3s ease;
+    .animate-glow-pulse {
+      animation: glow-pulse 2s ease-in-out infinite;
     }
 
-    .card-hover:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 20px 40px rgba(0, 183, 168, 0.2);
+    @keyframes glow-pulse {
+      0%, 100% { filter: drop-shadow(0 0 0px rgba(0, 183, 168, 0.5)); }
+      50% { filter: drop-shadow(0 0 20px rgba(0, 183, 168, 0.8)); }
     }
 
-    .btn-glow {
+    .card-premium {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
       position: relative;
       overflow: hidden;
     }
 
-    .btn-glow::before {
+    .card-premium::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+      transform: rotate(45deg);
+      transition: all 0.6s;
+    }
+
+    .card-premium:hover {
+      transform: translateY(-15px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0, 183, 168, 0.25);
+    }
+
+    .card-premium:hover::before {
+      right: -20%;
+      top: -20%;
+    }
+
+    .btn-premium {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .btn-premium::after {
       content: '';
       position: absolute;
       top: 50%;
@@ -64,112 +118,120 @@
       border-radius: 50%;
       background: rgba(255, 255, 255, 0.3);
       transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
+      transition: width 0.5s, height 0.5s;
     }
 
-    .btn-glow:hover::before {
+    .btn-premium:hover::after {
       width: 300px;
       height: 300px;
     }
 
-    .feature-icon {
-      font-size: 3rem;
-      animation: bounce 2s infinite;
+    .feature-box {
+      position: relative;
+      padding: 2rem;
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .hero-gradient {
-      background: linear-gradient(135deg, #00b7a8 0%, #009fbe 50%, #0d7377 100%);
-    }
-
-    .soft-bg {
-      background: radial-gradient(circle at 20% 50%, rgba(0, 183, 168, 0.1) 0%, transparent 50%),
-                  radial-gradient(circle at 80% 80%, rgba(0, 159, 190, 0.1) 0%, transparent 50%);
-    }
-
-    .pulse-glow {
-      animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    }
-
-    @keyframes pulse-glow {
-      0%, 100% {
-        box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7);
-      }
-      50% {
-        box-shadow: 0 0 0 10px rgba(255, 107, 53, 0);
-      }
-    }
-
-    .illustration-container {
-      perspective: 1000px;
-    }
-
-    .illustration {
-      animation: rotateY 6s ease-in-out infinite;
-    }
-
-    @keyframes rotateY {
-      0%, 100% { transform: rotateY(0deg) translateY(0); }
-      50% { transform: rotateY(5deg) translateY(-10px); }
-    }
-
-    .shape {
+    .feature-box::before {
+      content: '';
       position: absolute;
-      border-radius: 50%;
-      opacity: 0.1;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(0,183,168,0.1) 0%, rgba(255,107,53,0.05) 100%);
+      border-radius: 1.5rem;
+      z-index: -1;
     }
 
-    .shape-1 {
-      width: 300px;
-      height: 300px;
-      background: linear-gradient(135deg, #00b7a8, #009fbe);
-      top: -100px;
-      right: -100px;
-      animation: float 8s ease-in-out infinite;
+    .icon-3d {
+      font-size: 3.5rem;
+      display: inline-block;
+      filter: drop-shadow(0 10px 20px rgba(0, 183, 168, 0.2));
+      transition: transform 0.3s ease;
     }
 
-    .shape-2 {
-      width: 200px;
-      height: 200px;
-      background: linear-gradient(135deg, #009fbe, #0d7377);
-      bottom: -50px;
-      left: -50px;
-      animation: float 10s ease-in-out infinite;
-      animation-delay: 1s;
+    .feature-box:hover .icon-3d {
+      transform: scale(1.2) rotateY(360deg);
     }
 
-    .shape-3 {
-      width: 150px;
-      height: 150px;
-      background: linear-gradient(135deg, #ff6b35, #f7931e);
-      top: 50%;
-      left: 10%;
-      animation: float 7s ease-in-out infinite;
-      animation-delay: 2s;
+    /* Animated background */
+    .animated-bg {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%;
+      animation: animated-bg-gradient 15s ease infinite;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes animated-bg-gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .dots {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(circle, rgba(0,183,168,0.1) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: slide 20s linear infinite;
+    }
+
+    @keyframes slide {
+      0% { transform: translateX(0) translateY(0); }
+      100% { transform: translateX(50px) translateY(50px); }
+    }
+
+    .stat-counter {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00b7a8 0%, #ff6b35 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .scroll-reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.6s ease;
+    }
+
+    .scroll-reveal.active {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
-<body class="overflow-x-hidden bg-white" style="width: 100%; margin: 0; padding: 0;">
+<body class="overflow-x-hidden" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);">
   
   <!-- NAVBAR -->
-  <nav class="fixed w-full top-0 z-50 bg-white/90 backdrop-blur-md shadow-lg">
+  <nav class="fixed w-full top-0 z-50" style="background: rgba(13, 25, 42, 0.7); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0, 183, 168, 0.1);">
     <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="bg-gradient-to-r from-teal-500 to-blue-500 p-2 rounded-lg text-white text-2xl font-bold">
+      <!-- Logo -->
+      <div class="flex items-center gap-3 group cursor-pointer">
+        <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="p-3 rounded-xl text-white text-xl font-bold group-hover:scale-110 transition">
           ⚡
         </div>
-        <span class="text-2xl font-bold gradient-text">FixFlow IMS</span>
+        <div>
+          <span class="text-2xl font-bold text-transparent bg-clip-text block" style="background: linear-gradient(135deg, #00b7a8 0%, #ff6b35 100%);">FixFlow IMS</span>
+          <span class="text-xs text-cyan-300/70">Intelligent Issue Management</span>
+        </div>
       </div>
       
-      <div class="flex items-center gap-4">
-        <a href="login.html" class="px-6 py-2 text-primary font-semibold hover:text-secondary transition">
+      <!-- Navigation Links -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#features" class="text-gray-300 hover:text-cyan-400 font-medium transition">Features</a>
+        <a href="#how-it-works" class="text-gray-300 hover:text-cyan-400 font-medium transition">How It Works</a>
+      </div>
+
+      <!-- Auth Links -->
+      <div class="flex items-center gap-3">
+        <a href="admin-login.html" class="px-5 py-2 text-sm font-semibold text-red-400 hover:text-red-300 rounded-lg transition">
+          👤 Admin
+        </a>
+        <a href="login.html" class="px-5 py-2 text-sm font-semibold text-cyan-400 hover:text-cyan-300 rounded-lg transition">
           Login
         </a>
-        <a href="signup.html" class="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-full font-semibold hover:shadow-lg transition btn-glow hover:from-orange-600 hover:to-red-600">
+        <a href="signup.html" class="px-6 py-2.5 text-white rounded-lg font-semibold hover:shadow-xl transition text-sm" style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);">
           Get Started
         </a>
       </div>
@@ -177,489 +239,366 @@
   </nav>
 
   <!-- HERO SECTION -->
-  <section class="min-h-screen flex items-center justify-center pt-20 relative overflow-hidden soft-bg">
-    <!-- Animated background shapes -->
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
-    <div class="shape shape-3"></div>
-
-    <div class="max-w-6xl mx-auto px-6 py-20 z-10 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+  <section class="min-h-screen flex items-center justify-center pt-32 pb-20 relative overflow-hidden">
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 20% 80%, rgba(0, 183, 168, 0.1) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(255, 107, 53, 0.05) 0%, transparent 50%);"></div>
+    
+    <div class="max-w-6xl mx-auto px-6 z-10 grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
       <!-- Left Content -->
       <div class="space-y-8">
-        <div class="space-y-4">
-          <h1 class="text-5xl md:text-6xl font-bold leading-tight text-gray-900">
-            Manage your <span class="gradient-text">workflow</span>
+        <div>
+          <div class="inline-block px-4 py-2 rounded-full text-cyan-300 text-sm font-semibold mb-6" style="background: rgba(0, 183, 168, 0.1); border: 1px solid rgba(0, 183, 168, 0.2);">
+            ✨ Next-Gen Issue Management
+          </div>
+          <h1 class="text-6xl md:text-7xl font-bold text-white leading-tight">
+            Manage Issues Like Never Before
           </h1>
-          <p class="text-lg text-gray-600 leading-relaxed">
-            Automatically assign issues to the right technician based on category, availability, and workload. Keep your team productive and your issues resolved fast.
-          </p>
-        </div>
-        
-        <div class="flex gap-4 pt-4">
-          <a href="signup.html" class="px-8 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold rounded-full hover:shadow-2xl transition transform hover:scale-105 btn-glow hover:from-orange-600 hover:to-red-600">
-            Get Started
-          </a>
-          <a href="login.html" class="px-8 py-3 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary/5 transition transform hover:scale-105">
-            Learn More
-          </a>
         </div>
 
-        <!-- Quick Stats -->
-        <div class="grid grid-cols-2 gap-6 pt-8">
-          <div class="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl p-4">
-            <p class="text-2xl font-bold text-primary">1000+</p>
-            <p class="text-sm text-gray-600">Issues Resolved</p>
+        <p class="text-lg text-gray-300 leading-relaxed max-w-xl">
+          Smart assignment, real-time tracking, and intelligent automation. FixFlow IMS transforms how teams handle support tickets and issue resolution.
+        </p>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-3 gap-4 pt-4">
+          <div style="background: rgba(0, 183, 168, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.2);" class="rounded-lg p-4">
+            <div class="text-3xl font-bold text-cyan-400">1000+</div>
+            <p class="text-gray-300 text-sm mt-2">Issues Resolved</p>
           </div>
-          <div class="bg-gradient-to-br from-primary/10 to-secondary/10 rounded-xl p-4">
-            <p class="text-2xl font-bold text-primary">99%</p>
-            <p class="text-sm text-gray-600">Accuracy</p>
+          <div style="background: rgba(0, 183, 168, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.2);" class="rounded-lg p-4">
+            <div class="text-3xl font-bold text-cyan-400">99%</div>
+            <p class="text-gray-300 text-sm mt-2">Accuracy Rate</p>
           </div>
+          <div style="background: rgba(0, 183, 168, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.2);" class="rounded-lg p-4">
+            <div class="text-3xl font-bold text-cyan-400">24/7</div>
+            <p class="text-gray-300 text-sm mt-2">Support</p>
+          </div>
+        </div>
+
+        <!-- CTA Buttons -->
+        <div class="flex gap-4 pt-6">
+          <a href="signup.html" class="px-8 py-4 bg-white text-cyan-900 font-bold rounded-xl hover:shadow-2xl transition transform hover:scale-105 text-lg">
+            Start Free Trial
+          </a>
+          <a href="login.html" class="px-8 py-4 text-white font-bold rounded-xl border-2 border-cyan-400/50 hover:bg-cyan-400/10 transition transform hover:scale-105 text-lg">
+            Watch Demo
+          </a>
         </div>
       </div>
 
       <!-- Right Illustration -->
-      <div class="flex justify-center items-center relative h-full">
-        <svg class="w-full max-w-md h-auto" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <!-- Dashboard background -->
-          <rect width="400" height="400" fill="#f0f9fb"/>
-          
-          <!-- Chart bars -->
-          <rect x="80" y="240" width="30" height="120" fill="#00b7a8" rx="5"/>
-          <rect x="130" y="180" width="30" height="180" fill="#009fbe" rx="5"/>
-          <rect x="180" y="140" width="30" height="220" fill="#00b7a8" rx="5"/>
-          <rect x="230" y="200" width="30" height="160" fill="#009fbe" rx="5"/>
-          <rect x="280" y="120" width="30" height="240" fill="#00b7a8" rx="5"/>
-          
-          <!-- Trend line -->
-          <path d="M 70 300 Q 130 200, 200 180 T 330 120" stroke="#ff6b35" stroke-width="3" fill="none" stroke-linecap="round"/>
-          
-          <!-- Data points -->
-          <circle cx="70" cy="300" r="5" fill="#ff6b35"/>
-          <circle cx="200" cy="180" r="5" fill="#ff6b35"/>
-          <circle cx="330" cy="120" r="5" fill="#ff6b35"/>
-          
-          <!-- Grid lines -->
-          <line x1="50" y1="80" x2="350" y2="80" stroke="#e0e0e0" stroke-width="1"/>
-          <line x1="50" y1="140" x2="350" y2="140" stroke="#e0e0e0" stroke-width="1"/>
-          <line x1="50" y1="200" x2="350" y2="200" stroke="#e0e0e0" stroke-width="1"/>
-          
-          <!-- Title -->
-          <text x="200" y="40" font-size="20" font-weight="bold" text-anchor="middle" fill="#1a1a1a">
-            Dashboard Analytics
-          </text>
-        </svg>
+      <div class="flex justify-center items-center relative" style="animation: float 6s ease-in-out infinite;">
+        <div style="background: rgba(0, 183, 168, 0.1); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.2);" class="rounded-3xl p-8">
+          <svg class="w-full max-w-sm h-auto" style="filter: drop-shadow(0 0 20px rgba(0, 183, 168, 0.3));" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Dashboard Card -->
+            <rect x="20" y="20" width="360" height="360" rx="20" fill="#1e293b" opacity="0.95"/>
+            
+            <!-- Header -->
+            <rect x="40" y="40" width="320" height="60" rx="10" fill="rgba(0, 183, 168, 0.1)"/>
+            <text x="200" y="75" font-size="18" font-weight="bold" text-anchor="middle" fill="#00b7a8">Dashboard</text>
+            
+            <!-- Chart -->
+            <rect x="60" y="150" width="30" height="100" rx="5" fill="#00b7a8" opacity="0.8"/>
+            <rect x="105" y="110" width="30" height="140" rx="5" fill="#009fbe" opacity="0.8"/>
+            <rect x="150" y="80" width="30" height="170" rx="5" fill="#00b7a8" opacity="0.8"/>
+            <rect x="195" y="120" width="30" height="130" rx="5" fill="#009fbe" opacity="0.8"/>
+            <rect x="240" y="90" width="30" height="160" rx="5" fill="#00b7a8" opacity="0.8"/>
+            <rect x="285" y="110" width="30" height="140" rx="5" fill="#ff6b35" opacity="0.8"/>
+            
+            <!-- Trend Line -->
+            <path d="M 75 250 Q 150 150, 300 100" stroke="#ff6b35" stroke-width="3" fill="none" stroke-linecap="round"/>
+            
+            <!-- Stats Cards -->
+            <rect x="40" y="300" width="150" height="60" rx="10" fill="rgba(0, 183, 168, 0.15)"/>
+            <text x="115" y="325" font-size="14" font-weight="bold" text-anchor="middle" fill="#00b7a8">Active Issues</text>
+            <text x="115" y="345" font-size="16" font-weight="bold" text-anchor="middle" fill="#00b7a8">24</text>
+            
+            <rect x="210" y="300" width="150" height="60" rx="10" fill="rgba(255, 107, 53, 0.15)"/>
+            <text x="285" y="325" font-size="14" font-weight="bold" text-anchor="middle" fill="#ff6b35">Resolved</text>
+            <text x="285" y="345" font-size="16" font-weight="bold" text-anchor="middle" fill="#ff6b35">1024</text>
+          </svg>
+        </div>
       </div>
     </div>
+
+    <style>
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-30px); }
+      }
+    </style>
   </section>
 
   <!-- FEATURES SECTION -->
-  <section class="py-24 px-6 bg-white">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-20">
-        <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-          Powerful Features for Modern Teams
+  <section id="features" class="py-32 px-6 relative">
+    <div class="max-w-7xl mx-auto">
+      <!-- Section Header -->
+      <div class="text-center mb-24">
+        <h2 class="text-5xl md:text-6xl font-bold mb-6 text-white">
+          Powerful Features, Built for Teams
         </h2>
-        <p class="text-lg text-gray-600 max-w-2xl mx-auto">
-          Everything you need to manage issues efficiently
+        <p class="text-xl text-gray-300 max-w-2xl mx-auto">
+          Everything you need to streamline issue management
         </p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Features Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <!-- Feature 1 -->
-        <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 card-hover border border-primary/10">
+        <div style="background: rgba(0, 183, 168, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.15);" class="p-8 rounded-2xl hover:border-cyan-400/50 transition transform hover:scale-105 hover:shadow-2xl cursor-pointer" style="--tw-shadow-color: rgba(0, 183, 168, 0.25);">
           <div class="text-5xl mb-4">🎯</div>
-          <h3 class="text-xl font-bold mb-4 text-gray-900">Smart Assignment</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Automatically matches issues to technicians based on expertise and availability for optimal efficiency.
+          <h3 class="text-2xl font-bold mt-4 mb-3 text-white">Smart Assignment</h3>
+          <p class="text-gray-300 leading-relaxed">
+            AI-powered system automatically assigns issues to the right technician based on skills, availability, and workload.
           </p>
         </div>
 
         <!-- Feature 2 -->
-        <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 card-hover border border-primary/10">
+        <div style="background: rgba(0, 183, 168, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.15);" class="p-8 rounded-2xl hover:border-cyan-400/50 transition transform hover:scale-105 hover:shadow-2xl cursor-pointer" style="--tw-shadow-color: rgba(0, 183, 168, 0.25);">
           <div class="text-5xl mb-4">⚡</div>
-          <h3 class="text-xl font-bold mb-4 text-gray-900">Real-time Tracking</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Live updates every 5 seconds. Track progress, workload, and performance in real-time dashboards.
+          <h3 class="text-2xl font-bold mt-4 mb-3 text-white">Real-time Tracking</h3>
+          <p class="text-gray-300 leading-relaxed">
+            Live dashboards with real-time updates. Track progress, workload distribution, and performance metrics instantly.
           </p>
         </div>
 
         <!-- Feature 3 -->
-        <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 card-hover border border-primary/10">
+        <div style="background: rgba(0, 183, 168, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.15);" class="p-8 rounded-2xl hover:border-cyan-400/50 transition transform hover:scale-105 hover:shadow-2xl cursor-pointer" style="--tw-shadow-color: rgba(0, 183, 168, 0.25);">
           <div class="text-5xl mb-4">👥</div>
-          <h3 class="text-xl font-bold mb-4 text-gray-900">Multi-Role System</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Dedicated interfaces for employees and technicians with role-based dashboards and workflows.
+          <h3 class="text-2xl font-bold mt-4 mb-3 text-white">Multi-Role System</h3>
+          <p class="text-gray-300 leading-relaxed">
+            Dedicated interfaces for admins, employees, and technicians with role-based access and workflows.
           </p>
         </div>
 
         <!-- Feature 4 -->
-        <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 card-hover border border-primary/10">
+        <div style="background: rgba(0, 183, 168, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.15);" class="p-8 rounded-2xl hover:border-cyan-400/50 transition transform hover:scale-105 hover:shadow-2xl cursor-pointer" style="--tw-shadow-color: rgba(0, 183, 168, 0.25);">
           <div class="text-5xl mb-4">📊</div>
-          <h3 class="text-xl font-bold mb-4 text-gray-900">Analytics</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Comprehensive reports on issues, technician performance, and resolution times for optimization.
+          <h3 class="text-2xl font-bold mt-4 mb-3 text-white">Advanced Analytics</h3>
+          <p class="text-gray-300 leading-relaxed">
+            Comprehensive reports on performance, resolution times, technician efficiency, and team productivity.
           </p>
         </div>
 
         <!-- Feature 5 -->
-        <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 card-hover border border-primary/10">
-          <div class="text-5xl mb-4">🔐</div>
-          <h3 class="text-xl font-bold mb-4 text-gray-900">Secure & Reliable</h3>
-          <p class="text-gray-600 leading-relaxed">
-            JWT-based authentication with bcrypt encryption ensures your data is always protected.
+        <div style="background: rgba(0, 183, 168, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.15);" class="p-8 rounded-2xl hover:border-cyan-400/50 transition transform hover:scale-105 hover:shadow-2xl cursor-pointer" style="--tw-shadow-color: rgba(0, 183, 168, 0.25);">
+          <div class="text-5xl mb-4">🔒</div>
+          <h3 class="text-2xl font-bold mt-4 mb-3 text-white">Enterprise Security</h3>
+          <p class="text-gray-300 leading-relaxed">
+            JWT authentication, bcrypt encryption, role-based access control, and compliance with security standards.
           </p>
         </div>
 
         <!-- Feature 6 -->
-        <div class="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 card-hover border border-primary/10">
+        <div style="background: rgba(0, 183, 168, 0.08); backdrop-filter: blur(12px); border: 1px solid rgba(0, 183, 168, 0.15);" class="p-8 rounded-2xl hover:border-cyan-400/50 transition transform hover:scale-105 hover:shadow-2xl cursor-pointer" style="--tw-shadow-color: rgba(0, 183, 168, 0.25);">
           <div class="text-5xl mb-4">📱</div>
-          <h3 class="text-xl font-bold mb-4 text-gray-900">Responsive Design</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Beautiful interface that works seamlessly on desktop, tablet, and mobile devices.
+          <h3 class="text-2xl font-bold mt-4 mb-3 text-white">Fully Responsive</h3>
+          <p class="text-gray-300 leading-relaxed">
+            Beautiful, responsive design that works seamlessly on desktop, tablet, and mobile devices.
           </p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
-  <section class="py-24 px-6 soft-bg relative overflow-hidden">
-    <!-- Animated background pattern -->
-    <div class="absolute inset-0 z-0 opacity-10">
-      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#00b7a8" stroke-width="1"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-      </svg>
-    </div>
-    
-    <div class="max-w-6xl mx-auto relative z-10">
-      <div class="text-center mb-20">
-        <h2 class="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
-          How It Works
+  <!-- HOW IT WORKS SECTION -->
+  <section id="how-it-works" class="py-32 px-6 relative overflow-hidden">
+    <div style="background: linear-gradient(135deg, rgba(0, 183, 168, 0.05) 0%, rgba(255, 107, 53, 0.03) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(0, 183, 168, 0.1);" class="absolute inset-0"></div>
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="text-center mb-24">
+        <h2 class="text-5xl md:text-6xl font-bold mb-6 text-white">
+          Simple Workflow, Powerful Results
         </h2>
-        <p class="text-lg text-gray-600">Simple workflow to manage issues efficiently</p>
+        <p class="text-xl text-gray-300">Watch how issues get resolved in minutes</p>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <!-- Process Steps -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Step 1 -->
         <div class="text-center">
-          <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-2xl font-bold">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
             1
           </div>
-          <h3 class="text-lg font-bold mb-2 text-gray-900">Report</h3>
-          <p class="text-gray-600 text-sm">Employee reports issue with details</p>
+          <h3 class="text-xl font-bold mb-3 text-white">Report Issue</h3>
+          <p class="text-gray-300">Employee submits issue with detailed information and attachments</p>
         </div>
 
+        <!-- Step 2 -->
         <div class="text-center">
-          <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-2xl font-bold">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
             2
           </div>
-          <h3 class="text-lg font-bold mb-2 text-gray-900">Assign</h3>
-          <p class="text-gray-600 text-sm">System auto-assigns to best tech</p>
+          <h3 class="text-xl font-bold mb-3 text-white">Smart Assign</h3>
+          <p class="text-gray-300">System automatically routes to best available technician</p>
         </div>
 
+        <!-- Step 3 -->
         <div class="text-center">
-          <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-2xl font-bold">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
             3
           </div>
-          <h3 class="text-lg font-bold mb-2 text-gray-900">Execute</h3>
-          <p class="text-gray-600 text-sm">Technician updates progress</p>
+          <h3 class="text-xl font-bold mb-3 text-white">Execute</h3>
+          <p class="text-gray-300">Technician updates progress and provides real-time updates</p>
         </div>
 
+        <!-- Step 4 -->
         <div class="text-center">
-          <div class="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-2xl font-bold">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
             4
           </div>
-          <h3 class="text-lg font-bold mb-2 text-gray-900">Resolve</h3>
-          <p class="text-gray-600 text-sm">Issue marked complete</p>
+          <h3 class="text-xl font-bold mb-3 text-white">Resolve</h3>
+          <p class="text-gray-300">Issue marked complete with feedback and ratings</p>
+        </div>
+      </div>
+    </div>
+  </section>
+        <h2 class="text-5xl md:text-6xl font-bold mb-6 text-white">
+          Simple Workflow, Powerful Results
+        </h2>
+        <p class="text-xl text-gray-300">Watch how issues get resolved in minutes</p>
+      </div>
+
+      <!-- Process Steps -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Step 1 -->
+        <div class="text-center">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
+            1
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Report Issue</h3>
+          <p class="text-gray-300">Employee submits issue with detailed information and attachments</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="text-center">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
+            2
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Smart Assign</h3>
+          <p class="text-gray-300">System automatically routes to best available technician</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="text-center">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
+            3
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Execute</h3>
+          <p class="text-gray-300">Technician updates progress and provides real-time updates</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="text-center">
+          <div style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="w-20 h-20 mx-auto mb-6 text-white rounded-full flex items-center justify-center text-3xl font-bold shadow-lg transform hover:scale-110 transition">
+            4
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-white">Resolve</h3>
+          <p class="text-gray-300">Issue marked complete with feedback and ratings</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- CTA SECTION -->
-  <section class="hero-gradient text-white py-24 px-6">
-    <div class="max-w-4xl mx-auto text-center">
-      <h2 class="text-5xl font-bold mb-6">
-        Ready to streamline your operations?
+  <section style="background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);" class="text-white py-32 px-6 relative overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute w-96 h-96 bg-white rounded-full filter blur-3xl -top-40 -left-40"></div>
+      <div class="absolute w-96 h-96 bg-white rounded-full filter blur-3xl -bottom-40 -right-40"></div>
+    </div>
+
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+      <h2 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
+        Ready to Transform Your Support?
       </h2>
-      <p class="text-lg text-white/90 mb-10">
-        Join teams that are transforming how they manage issues. Start free today, no credit card required.
+      <p class="text-xl text-white/90 mb-12 max-w-2xl mx-auto">
+        Join hundreds of teams already using FixFlow IMS to manage issues faster, smarter, and better.
       </p>
+
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="signup.html" class="px-10 py-4 bg-orange-500 text-white font-bold rounded-full hover:bg-orange-600 transition transform hover:scale-105 text-lg btn-glow pulse-glow">
-          Start For Free
+        <a href="signup.html" class="px-12 py-4 bg-white text-cyan-900 font-bold rounded-xl hover:shadow-2xl transition transform hover:scale-105 text-lg shadow-lg">
+          Start Free Trial →
         </a>
-        <a href="login.html" class="px-10 py-4 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition transform hover:scale-105 text-lg">
+        <a href="login.html" class="px-12 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white/10 transition transform hover:scale-105 text-lg">
           Sign In
         </a>
       </div>
+
+      <p class="text-white/70 text-sm mt-8">
+        🎉 No credit card required • 14-day free trial • Full features unlocked
+      </p>
     </div>
   </section>
 
   <!-- FOOTER -->
-  <footer class="bg-gray-900 text-gray-400 py-12 px-6">
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-      <div>
-        <h3 class="text-white font-bold mb-4">FixFlow IMS</h3>
-        <p class="text-sm">Intelligent Issue Management for modern teams</p>
+  <footer style="background-color: #0f172a; border-top: 1px solid rgba(0, 183, 168, 0.1);" class="text-gray-300 py-16 px-6">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div>
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">⚡</span>
+            <span class="text-xl font-bold text-white">FixFlow IMS</span>
+          </div>
+          <p class="text-gray-400 text-sm">Intelligent Issue Management for modern teams</p>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-4 text-white">Product</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#features" class="hover:text-cyan-400 transition">Features</a></li>
+            <li><a href="#how-it-works" class="hover:text-cyan-400 transition">How It Works</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Documentation</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-4 text-white">Company</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-cyan-400 transition">About</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Blog</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Contact</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-bold mb-4 text-white">Resources</h4>
+          <ul class="space-y-2 text-sm text-gray-400">
+            <li><a href="#" class="hover:text-cyan-400 transition">Help Center</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-cyan-400 transition">Terms</a></li>
+          </ul>
+        </div>
       </div>
-      <div>
-        <h3 class="text-white font-bold mb-4">Product</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">Features</a></li>
-          <li><a href="#" class="hover:text-white transition">Pricing</a></li>
-          <li><a href="#" class="hover:text-white transition">Security</a></li>
-        </ul>
+
+      <div class="border-t border-gray-700 pt-12 text-center text-gray-400 text-sm">
+        <p>&copy; 2026 FixFlow IMS. All rights reserved. | Built with ❤️ for teams that care</p>
       </div>
-      <div>
-        <h3 class="text-white font-bold mb-4">Company</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">About</a></li>
-          <li><a href="#" class="hover:text-white transition">Blog</a></li>
-          <li><a href="#" class="hover:text-white transition">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-white font-bold mb-4">Legal</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">Privacy</a></li>
-          <li><a href="#" class="hover:text-white transition">Terms</a></li>
-          <li><a href="#" class="hover:text-white transition">Cookies</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="border-t border-gray-800 pt-8 text-center text-sm">
-      <p>&copy; 2026 FixFlow IMS. All rights reserved.</p>
     </div>
   </footer>
 
+  <script>
+    // Simple scroll animation for elements
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observer = new IntersectionObserver(function(entries) {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe all feature cards
+    document.querySelectorAll('[style*="background: rgba(0, 183, 168, 0.08)"]').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.transition = 'all 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
 </body>
 </html>
-  
-  <!-- NAVBAR -->
-  <nav class="fixed w-full top-0 z-50 bg-white/80 backdrop-blur-md shadow-lg">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="bg-gradient-to-r from-teal-500 to-blue-500 p-2 rounded-lg text-white text-2xl font-bold">
-          ⚡
-        </div>
-        <span class="text-2xl font-bold gradient-text">FixFlow IMS</span>
-      </div>
-      
-      <div class="flex items-center gap-4">
-        <a href="login.html" class="px-6 py-2 text-primary font-semibold hover:text-secondary transition">
-          Login
-        </a>
-        <a href="signup.html" class="px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:shadow-lg transition btn-glow hover:from-orange-600 hover:to-red-600">
-          Get Started
-        </a>
-      </div>
-    </div>
-  </nav>
 
-  <!-- FEATURES SECTION -->
-  <section class="py-24 px-6 bg-gradient-to-b from-gray-50 to-white">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-20">
-        <h2 class="text-5xl font-bold mb-4">
-          Why Choose <span class="gradient-text">FixFlow?</span>
-        </h2>
-        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-          Revolutionary features designed to streamline your issue management workflow
-        </p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Feature 1 -->
-        <div class="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-lg card-hover border border-gray-200">
-          <div class="feature-icon mb-4">🎯</div>
-          <h3 class="text-2xl font-bold mb-4 text-gray-800">Smart Assignment</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Automatically assign issues to technicians based on category, availability, and current workload for optimal efficiency.
-          </p>
-        </div>
-
-        <!-- Feature 2 -->
-        <div class="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-lg card-hover border border-gray-200">
-          <div class="feature-icon mb-4">⚡</div>
-          <h3 class="text-2xl font-bold mb-4 text-gray-800">Real-time Updates</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Live dashboard updates every 5 seconds. Track issue progress, technician workload, and system performance in real-time.
-          </p>
-        </div>
-
-        <!-- Feature 3 -->
-        <div class="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-lg card-hover border border-gray-200">
-          <div class="feature-icon mb-4">👥</div>
-          <h3 class="text-2xl font-bold mb-4 text-gray-800">Multi-Role System</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Separate dashboards for Employees and Technicians. Two-step signup with profile completion for specialized data.
-          </p>
-        </div>
-
-        <!-- Feature 4 -->
-        <div class="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-lg card-hover border border-gray-200">
-          <div class="feature-icon mb-4">📊</div>
-          <h3 class="text-2xl font-bold mb-4 text-gray-800">Analytics & Reports</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Comprehensive reports on issue trends, technician performance, and resolution times to optimize operations.
-          </p>
-        </div>
-
-        <!-- Feature 5 -->
-        <div class="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-lg card-hover border border-gray-200">
-          <div class="feature-icon mb-4">🔐</div>
-          <h3 class="text-2xl font-bold mb-4 text-gray-800">Secure & Reliable</h3>
-          <p class="text-gray-600 leading-relaxed">
-            JWT token-based authentication with bcrypt password hashing ensures your data is always secure and protected.
-          </p>
-        </div>
-
-        <!-- Feature 6 -->
-        <div class="bg-white/80 backdrop-blur rounded-2xl p-8 shadow-lg card-hover border border-gray-200">
-          <div class="feature-icon mb-4">📱</div>
-          <h3 class="text-2xl font-bold mb-4 text-gray-800">Responsive Design</h3>
-          <p class="text-gray-600 leading-relaxed">
-            Beautiful, mobile-friendly interface that works seamlessly on desktop, tablet, and smartphone devices.
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="py-24 px-6 bg-white">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-20">
-        <h2 class="text-5xl font-bold mb-4">
-          How <span class="gradient-text">It Works</span>
-        </h2>
-        <p class="text-xl text-gray-600">Simple 4-step process to manage issues efficiently</p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div class="text-center">
-          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-3xl font-bold">
-            1
-          </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800">Employee Reports Issue</h3>
-          <p class="text-gray-600">Employee submits issue with category, priority, and location details</p>
-        </div>
-
-        <div class="text-center">
-          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-3xl font-bold">
-            2
-          </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800">Smart Assignment</h3>
-          <p class="text-gray-600">System automatically assigns to best available technician</p>
-        </div>
-
-        <div class="text-center">
-          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-3xl font-bold">
-            3
-          </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800">Technician Works</h3>
-          <p class="text-gray-600">Technician updates status and provides progress updates</p>
-        </div>
-
-        <div class="text-center">
-          <div class="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-primary to-secondary text-white rounded-full flex items-center justify-center text-3xl font-bold">
-            4
-          </div>
-          <h3 class="text-xl font-bold mb-2 text-gray-800">Issue Resolved</h3>
-          <p class="text-gray-600">Issue marked as complete with final status and notes</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CATEGORIES SECTION -->
-  <section class="py-24 px-6 bg-gray-50">
-    <div class="max-w-6xl mx-auto">
-      <div class="text-center mb-20">
-        <h2 class="text-5xl font-bold mb-4">
-          Supported <span class="gradient-text">Categories</span>
-        </h2>
-        <p class="text-xl text-gray-600">We handle all types of technical issues</p>
-      </div>
-
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">⚡</div>
-          <h3 class="font-bold text-lg text-gray-800">Electrical</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">💧</div>
-          <h3 class="font-bold text-lg text-gray-800">Plumbing</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">🌐</div>
-          <h3 class="font-bold text-lg text-gray-800">Network</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">❄️</div>
-          <h3 class="font-bold text-lg text-gray-800">HVAC</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">🔧</div>
-          <h3 class="font-bold text-lg text-gray-800">Maintenance</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">🔒</div>
-          <h3 class="font-bold text-lg text-gray-800">Security</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">📋</div>
-          <h3 class="font-bold text-lg text-gray-800">Other</h3>
-        </div>
-        <div class="bg-white rounded-xl p-6 text-center shadow-lg hover:shadow-xl transition">
-          <div class="text-4xl mb-3">+</div>
-          <h3 class="font-bold text-lg text-gray-800">More Coming</h3>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="bg-gray-900 text-gray-400 py-12 px-6">
-    <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-      <div>
-        <h3 class="text-white font-bold mb-4">FixFlow IMS</h3>
-        <p class="text-sm">Intelligent Issue Management System for modern organizations</p>
-      </div>
-      <div>
-        <h3 class="text-white font-bold mb-4">Product</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">Features</a></li>
-          <li><a href="#" class="hover:text-white transition">Pricing</a></li>
-          <li><a href="#" class="hover:text-white transition">Security</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-white font-bold mb-4">Company</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">About</a></li>
-          <li><a href="#" class="hover:text-white transition">Blog</a></li>
-          <li><a href="#" class="hover:text-white transition">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <h3 class="text-white font-bold mb-4">Legal</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">Privacy</a></li>
-          <li><a href="#" class="hover:text-white transition">Terms</a></li>
-          <li><a href="#" class="hover:text-white transition">Cookies</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="border-t border-gray-800 pt-8 text-center text-sm">
-      <p>&copy; 2026 FixFlow IMS. All rights reserved.</p>
-    </div>
-  </footer>
-
-</body>
-</html>

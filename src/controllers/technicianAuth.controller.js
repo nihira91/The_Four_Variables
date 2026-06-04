@@ -7,15 +7,73 @@ const bcrypt = require("bcryptjs");
 ============================ */
 exports.signupTechnician = async (req, res) => {
   try {
-    const { name, email, password, contactNo } = req.body;
+    const { name, email, password, contactNo, organizationId, organizationName } = req.body;
+    const Organization = require("../models/organization.model");
+    const RegistrationRequest = require("../models/registrationRequest.model");
 
     if (!name || !email || !password || !contactNo) {
-      return res.status(400).json({ message: "Name, email, contact no., and password are required" });
+      return res.status(400).json({ 
+        success: false,
+        message: "Name, email, contact no., and password are required" 
+      });
+    }
+
+    if (!organizationId && !organizationName) {
+      return res.status(400).json({
+        success: false,
+        message: "Either organizationId or organizationName is required"
+      });
+    }
+
+    let organization;
+
+    // CASE 1: OrganizationId provided (selecting existing)
+    if (organizationId) {
+      organization = await Organization.findById(organizationId);
+      
+      if (!organization) {
+        return res.status(404).json({
+          success: false,
+          message: 'Organization not found'
+        });
+      }
+
+      if (organization.status !== 'approved' || !organization.isActive) {
+        return res.status(403).json({
+          success: false,
+          message: 'Organization is not active. Registration not allowed.'
+        });
+      }
+    }
+    // CASE 2: OrganizationName provided (writing/searching)
+    else {
+      // Check if organization exists
+      organization = await Organization.findOne({
+        organizationName: { $regex: `^${organizationName}$`, $options: 'i' }
+      });
+
+      if (!organization) {
+        return res.status(404).json({
+          success: false,
+          message: 'This organization does not exist. Please select from available organizations or contact your organization admin.'
+        });
+      }
+
+      // If organization exists but not active
+      if (!organization.isActive && organization.status !== 'approved') {
+        return res.status(403).json({
+          success: false,
+          message: 'Organization is pending verification. Admin has not registered yet.'
+        });
+      }
     }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: "Email already exists" });
+      return res.status(409).json({ 
+        success: false,
+        message: "Email already exists" 
+      });
     }
 
     const technician = await User.create({
@@ -23,11 +81,23 @@ exports.signupTechnician = async (req, res) => {
       email,
       password, // hashed by model pre-save hook
       contactNo,
+      organizationId: organization._id,
       role: "technician",
-      profileCompleted: false  // Flag to indicate incomplete profile
+      profileCompleted: false,  // Flag to indicate incomplete profile
+      isActive: false  // Initially inactive until admin approval
     });
 
-    // Generate token for redirect to profile completion
+    // Create registration request
+    await RegistrationRequest.create({
+      organizationId: organization._id,
+      userId: technician._id,
+      userRole: 'technician',
+      userName: name,
+      userEmail: email,
+      status: 'pending'
+    });
+
+    // Generate token for redirect to profile completion (will work after approval)
     const token = jwt.sign(
       { id: technician._id, role: technician.role },
       process.env.JWT_SECRET,
@@ -35,20 +105,25 @@ exports.signupTechnician = async (req, res) => {
     );
 
     return res.status(201).json({
-      message: "Technician registered successfully. Please complete your profile.",
+      success: true,
+      message: "Registration request submitted successfully. Waiting for admin approval.",
       token,
-      user: {
-        id: technician._id,
-        name: technician.name,
-        email: technician.email,
-        role: technician.role,
-        profileCompleted: technician.profileCompleted
+      data: {
+        user: {
+          id: technician._id,
+          name: technician.name,
+          email: technician.email,
+          role: technician.role,
+          organizationId: organization._id,
+          organizationName: organization.organizationName
+        },
+        status: 'pending_approval'
       }
     });
 
   } catch (error) {
     console.error("Technician signup error:", error);
-    return res.status(500).json({ message: "Server error during signup" });
+    return res.status(500).json({ message: "Server error during signup", error: error.message });
   }
 };
 
@@ -98,6 +173,13 @@ exports.loginTechnician = async (req, res) => {
       return res.status(404).json({ message: "Technician not found" });
     }
 
+    // Check if account is active (approved by admin)
+    if (!user.isActive) {
+      return res.status(403).json({ 
+        message: "Your account is pending admin approval. Please wait for approval." 
+      });
+    }
+
     const validPass = await bcrypt.compare(password, user.password);
     if (!validPass) {
       return res.status(401).json({ message: "Incorrect password" });
@@ -118,7 +200,8 @@ exports.loginTechnician = async (req, res) => {
         email: user.email,
         role: user.role,
         category: user.category,
-        profileCompleted: user.profileCompleted
+        profileCompleted: user.profileCompleted,
+        organizationId: user.organizationId
       }
     });
 

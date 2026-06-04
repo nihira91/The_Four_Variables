@@ -6,7 +6,8 @@ const {
   getEmployeeIssues,
   getSingleIssue,
   updateIssueStatus,
-  getAllLiveIssues
+  getAllLiveIssues,
+  getAICategorization
 } = require('../controllers/employeeIssue.controller');
 
 const { employeeAuthCheck } = require('../middlewares/employeeAuthCheck');
@@ -17,6 +18,7 @@ router.get('/live', employeeAuthCheck, getAllLiveIssues);
 router.get('/', employeeAuthCheck, getEmployeeIssues);
 router.get('/issue/:id', employeeAuthCheck, getSingleIssue);
 router.patch("/issue/:issueId/status", employeeAuthCheck, updateIssueStatus);
+router.post('/categorize', employeeAuthCheck, getAICategorization);
 
 
 module.exports = router;

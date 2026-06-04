@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FixFlow IMS - Admin Registration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00b7a8',
+                        secondary: '#009fbe',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00b7a8 0%, #009fbe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff8c42 100%);
+        }
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-glow:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
+            top: -100px;
+            right: -100px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #f7931e, #ff8c42);
+            bottom: -50px;
+            left: -50px;
+            animation: float 10s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        .input-focus {
+            @apply border-primary/50 focus:ring-2 focus:ring-primary focus:border-primary;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-orange-50 min-h-screen flex items-center justify-center overflow-hidden relative py-8">
+    
+    <!-- Animated Background -->
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <div class="w-full max-w-5xl mx-4 z-10">
+        <div class="bg-white/95 backdrop-blur rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+            
+            <!-- LEFT SECTION - BRANDING & INFO -->
+            <div class="hero-gradient text-white p-10 md:p-14 flex flex-col justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="grid-signup" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid-signup)" />
+                    </svg>
+                </div>
+
+                <div class="relative z-10">
+                    <div class="text-6xl mb-6 animate-float">👑</div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-3">Admin Registration</h1>
+                    <p class="text-lg text-white/90 leading-relaxed mb-8">
+                        Create your administrator account to manage FixFlow IMS and unlock powerful system controls, analytics, and user management capabilities.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                            <p class="text-sm font-semibold mb-1">🎯 Full Control</p>
+                            <p class="text-xs text-white/80">Manage users, settings & reports</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                            <p class="text-sm font-semibold mb-1">📊 Advanced Analytics</p>
+                            <p class="text-xs text-white/80">View system-wide insights & metrics</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SECTION - SIGNUP FORM -->
+            <div class="p-10 md:p-14 flex flex-col justify-center max-h-[90vh] overflow-y-auto">
+                <div class="mb-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Create Admin Account</h2>
+                    <p class="text-gray-600">Fill in your details to register as an administrator</p>
+                </div>
+
+                <form id="adminSignupForm" class="space-y-5">
+
+                    <!-- NAME -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block font-semibold text-gray-900 mb-2 text-sm">First Name</label>
+                            <input 
+                                id="firstName"
+                                type="text"
+                                required
+                                placeholder="John"
+                                class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                            />
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-gray-900 mb-2 text-sm">Last Name</label>
+                            <input 
+                                id="lastName"
+                                type="text"
+                                required
+                                placeholder="Doe"
+                                class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- EMAIL -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-2 text-sm">Email Address</label>
+                        <input 
+                            id="signupEmail"
+                            type="email"
+                            required
+                            placeholder="admin@fixflow.com"
+                            class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                    </div>
+
+                    <!-- COMPANY/ORGANIZATION -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-2 text-sm">Organization Name</label>
+                        <input 
+                            id="organization"
+                            type="text"
+                            required
+                            placeholder="Your Company Name"
+                            class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-2 text-sm">Password</label>
+                        <input 
+                            id="signupPassword"
+                            type="password"
+                            required
+                            placeholder="••••••••••••"
+                            class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">At least 8 characters with uppercase, lowercase & numbers</p>
+                    </div>
+
+                    <!-- CONFIRM PASSWORD -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-2 text-sm">Confirm Password</label>
+                        <input 
+                            id="confirmPassword"
+                            type="password"
+                            required
+                            placeholder="••••••••••••"
+                            class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                    </div>
+
+                    <!-- ADMIN CODE -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-2 text-sm">Admin Registration Code</label>
+                        <input 
+                            id="adminCode"
+                            type="text"
+                            required
+                            placeholder="Enter code provided by system"
+                            class="w-full border-2 border-gray-300 rounded-xl px-4 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                        <p class="text-xs text-gray-500 mt-1">Required for security verification</p>
+                    </div>
+
+                    <!-- TERMS -->
+                    <div class="flex items-start gap-3">
+                        <input 
+                            type="checkbox" 
+                            id="agreeTerms"
+                            required
+                            class="w-5 h-5 accent-orange-500 cursor-pointer rounded mt-1"
+                        />
+                        <label for="agreeTerms" class="text-sm text-gray-700 cursor-pointer">
+                            I agree to the <a href="#" class="text-orange-600 font-semibold hover:underline">Terms of Service</a> and <a href="#" class="text-orange-600 font-semibold hover:underline">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <!-- ERROR MESSAGE -->
+                    <div id="errorMsg" class="hidden bg-red-50 border-2 border-red-200 rounded-xl p-4 text-red-700 text-sm font-semibold flex items-center gap-2">
+                        <span>❌</span>
+                        <span id="errorText"></span>
+                    </div>
+
+                    <!-- SUCCESS MESSAGE -->
+                    <div id="successMsg" class="hidden bg-green-50 border-2 border-green-200 rounded-xl p-4 text-green-700 text-sm font-semibold flex items-center gap-2">
+                        <span>✅</span>
+                        <span>Account created! Redirecting...</span>
+                    </div>
+
+                    <!-- LOADING STATE -->
+                    <div id="loadingIndicator" class="hidden flex items-center justify-center gap-3 text-orange-600 font-semibold bg-orange-50 p-4 rounded-xl">
+                        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Creating your account...</span>
+                    </div>
+
+                    <!-- SUBMIT BUTTON -->
+                    <button 
+                        type="submit"
+                        id="signupBtn"
+                        class="w-full bg-gradient-to-r from-orange-500 to-orange-600 text-white py-3 rounded-xl text-lg font-bold hover:shadow-xl hover:shadow-orange-600/40 transition transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed btn-glow"
+                    >
+                        CREATE ADMIN ACCOUNT
+                    </button>
+
+                    <!-- LOGIN LINK -->
+                    <p class="text-center text-gray-600 text-sm">
+                        Already have an account? <a href="admin-login.html" class="text-orange-600 font-semibold hover:text-orange-700 transition hover:underline">Login here</a>
+                    </p>
+                </form>
+
+                <!-- NAVIGATION -->
+                <div class="mt-6 pt-4 border-t border-gray-200 text-center">
+                    <p class="text-xs text-gray-500">
+                        <a href="index.html" class="text-primary hover:underline">← Back to Home</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        document.getElementById('adminSignupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const organization = document.getElementById('organization').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const adminCode = document.getElementById('adminCode').value.trim();
+            const agreeTerms = document.getElementById('agreeTerms').checked;
+
+            // Validation
+            if (password !== confirmPassword) {
+                showError('Passwords do not match!');
+                return;
+            }
+
+            if (password.length < 8) {
+                showError('Password must be at least 8 characters long');
+                return;
+            }
+
+            if (!agreeTerms) {
+                showError('You must agree to the Terms of Service');
+                return;
+            }
+
+            // Clear messages
+            document.getElementById('errorMsg').classList.add('hidden');
+            document.getElementById('successMsg').classList.add('hidden');
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('signupBtn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: `${firstName} ${lastName}`,
+                        email,
+                        organization,
+                        password,
+                        adminCode
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+
+                // Success
+                document.getElementById('successMsg').classList.remove('hidden');
+                document.getElementById('loadingIndicator').classList.add('hidden');
+
+                // Redirect
+                setTimeout(() => {
+                    window.location.href = 'admin-login.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(error.message);
+            }
+        });
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMsg').classList.remove('hidden');
+            document.getElementById('loadingIndicator').classList.add('hidden');
+            document.getElementById('signupBtn').disabled = false;
+        }
+    </script>
+</body>
+</html>

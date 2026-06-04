@@ -4,36 +4,124 @@ const bcrypt = require('bcryptjs');
 
 exports.signupEmployee = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, organizationId, organizationName, department, floor, contactNo } = req.body;
+    const Organization = require('../models/organization.model');
+    const RegistrationRequest = require('../models/registrationRequest.model');
 
+    // Validate input
     if (!name || !email || !password) {
-      return res.status(400).json({ message: "All fields are required" });
+      return res.status(400).json({ 
+        success: false,
+        message: "Name, email, and password are required" 
+      });
     }
 
+    if (!organizationId && !organizationName) {
+      return res.status(400).json({ 
+        success: false,
+        message: "Either organizationId or organizationName is required" 
+      });
+    }
+
+    let organization;
+
+    // CASE 1: OrganizationId provided (selecting existing)
+    if (organizationId) {
+      organization = await Organization.findById(organizationId);
+      
+      if (!organization) {
+        return res.status(404).json({
+          success: false,
+          message: 'Organization not found'
+        });
+      }
+
+      if (organization.status !== 'approved' || !organization.isActive) {
+        return res.status(403).json({
+          success: false,
+          message: 'Organization is not active. Registration not allowed.'
+        });
+      }
+    } 
+    // CASE 2: OrganizationName provided (writing/searching)
+    else {
+      // Check if organization exists
+      organization = await Organization.findOne({ 
+        organizationName: { $regex: `^${organizationName}$`, $options: 'i' } 
+      });
+
+      if (!organization) {
+        return res.status(404).json({
+          success: false,
+          message: 'This organization does not exist. Please select from available organizations or contact your organization admin.'
+        });
+      }
+
+      // If organization exists but not active
+      if (!organization.isActive && organization.status !== 'approved') {
+        return res.status(403).json({
+          success: false,
+          message: 'Organization is pending verification. Admin has not registered yet.'
+        });
+      }
+    }
+
+    // Check if email already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(409).json({ message: "Email already exists" });
+      return res.status(409).json({ 
+        success: false,
+        message: "Email already exists" 
+      });
     }
 
+    // Create user (initially inactive)
     const employee = await User.create({
       name,
       email,
       password,
-      role: "employee"
+      role: "employee",
+      organizationId: organization._id,
+      department: department || null,
+      floor: floor || null,
+      contactNo: contactNo || null,
+      isActive: false  // Initially inactive until admin approval
+    });
+
+    // Create registration request
+    await RegistrationRequest.create({
+      organizationId: organization._id,
+      userId: employee._id,
+      userRole: 'employee',
+      userName: name,
+      userEmail: email,
+      department: department || null,
+      floor: floor || null,
+      status: 'pending'
     });
 
     return res.status(201).json({
-      message: "Employee registered successfully",
-      user: {
-        id: employee._id,
-        name: employee.name,
-        email: employee.email,
-        role: employee.role
+      success: true,
+      message: "Registration request submitted successfully. Waiting for admin approval.",
+      data: {
+        user: {
+          id: employee._id,
+          name: employee.name,
+          email: employee.email,
+          role: employee.role,
+          organizationId: organization._id,
+          organizationName: organization.organizationName
+        },
+        status: 'pending_approval'
       }
     });
   } catch (error) {
     console.error("Employee signup error:", error);
-    return res.status(500).json({ message: "Server error during signup" });
+    return res.status(500).json({ 
+      success: false,
+      message: "Server error during signup", 
+      error: error.message 
+    });
   }
 };
 
@@ -48,6 +136,13 @@ exports.loginEmployee = async (req, res) => {
     const user = await User.findOne({ email, role: 'employee' });
     if (!user)
       return res.status(404).json({ message: "Employee not found" });
+
+    // Check if account is active (approved by admin)
+    if (!user.isActive) {
+      return res.status(403).json({ 
+        message: "Your account is pending admin approval. Please wait for approval." 
+      });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -68,7 +163,8 @@ exports.loginEmployee = async (req, res) => {
         role: user.role,          
         department: user.department,
         floor: user.floor,
-        deskId: user.deskId
+        deskId: user.deskId,
+        organizationId: user.organizationId
       }
     });
 

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FixFlow IMS - Admin Login</title>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00b7a8',
+                        secondary: '#009fbe',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00b7a8 0%, #009fbe 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #00b7a8 0%, #009fbe 50%, #0d7377 100%);
+        }
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn-glow:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+        }
+
+        .shape-1 {
+            width: 300px;
+            height: 300px;
+            background: linear-gradient(135deg, #00b7a8, #009fbe);
+            top: -100px;
+            right: -100px;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .shape-2 {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #009fbe, #0d7377);
+            bottom: -50px;
+            left: -50px;
+            animation: float 10s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+
+        .input-focus {
+            @apply border-primary/50 focus:ring-2 focus:ring-primary focus:border-primary;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen flex items-center justify-center overflow-hidden relative">
+    
+    <!-- Animated Background -->
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+
+    <div class="w-full max-w-5xl mx-4 z-10">
+        <div class="bg-white/95 backdrop-blur rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-2">
+            
+            <!-- LEFT SECTION - BRANDING & INFO -->
+            <div class="hero-gradient text-white p-10 md:p-14 flex flex-col justify-center relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10">
+                    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <pattern id="grid-admin" width="40" height="40" patternUnits="userSpaceOnUse">
+                                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#ffffff" stroke-width="1"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid-admin)" />
+                    </svg>
+                </div>
+
+                <div class="relative z-10">
+                    <div class="text-6xl mb-6 animate-float">🔐</div>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-3">Admin Portal</h1>
+                    <p class="text-lg text-white/90 leading-relaxed mb-8">
+                        Secure access to FixFlow IMS administration dashboard. Manage your IT support system with powerful tools and real-time analytics.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                            <p class="text-sm font-semibold mb-1">✈️ 24/7 Monitoring</p>
+                            <p class="text-xs text-white/80">All activities tracked and logged</p>
+                        </div>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-xl p-4 border border-white/30">
+                            <p class="text-sm font-semibold mb-1">🔒 Enterprise Security</p>
+                            <p class="text-xs text-white/80">JWT tokens & bcrypt encryption</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT SECTION - LOGIN FORM -->
+            <div class="p-10 md:p-14 flex flex-col justify-center">
+                <div class="mb-8">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Administrator Login</h2>
+                    <p class="text-gray-600">Enter your admin credentials to access the dashboard</p>
+                </div>
+
+                <form id="adminLoginForm" class="space-y-6">
+
+                    <!-- EMAIL -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-3 text-sm">Email Address</label>
+                        <input 
+                            id="adminEmail"
+                            type="email"
+                            required
+                            placeholder="admin@fixflow.com"
+                            class="w-full border-2 border-gray-300 rounded-xl px-5 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div>
+                        <label class="block font-semibold text-gray-900 mb-3 text-sm">Password</label>
+                        <input 
+                            id="adminPassword"
+                            type="password"
+                            required
+                            placeholder="••••••••••••"
+                            class="w-full border-2 border-gray-300 rounded-xl px-5 py-3 text-gray-900 placeholder-gray-400 transition input-focus"
+                        />
+                    </div>
+
+                    <!-- REMEMBER ME -->
+                    <div class="flex items-center gap-3">
+                        <input 
+                            type="checkbox" 
+                            id="rememberMe"
+                            class="w-5 h-5 accent-primary cursor-pointer rounded"
+                        />
+                        <label for="rememberMe" class="text-sm text-gray-700 cursor-pointer font-medium">Remember me on this device</label>
+                    </div>
+
+                    <!-- ERROR MESSAGE -->
+                    <div id="errorMsg" class="hidden bg-red-50 border-2 border-red-200 rounded-xl p-4 text-red-700 text-sm font-semibold flex items-center gap-2">
+                        <span>❌</span>
+                        <span id="errorText"></span>
+                    </div>
+
+                    <!-- SUCCESS MESSAGE -->
+                    <div id="successMsg" class="hidden bg-green-50 border-2 border-green-200 rounded-xl p-4 text-green-700 text-sm font-semibold flex items-center gap-2">
+                        <span>✅</span>
+                        <span>Login successful! Redirecting...</span>
+                    </div>
+
+                    <!-- LOADING STATE -->
+                    <div id="loadingIndicator" class="hidden flex items-center justify-center gap-3 text-primary font-semibold bg-primary/10 p-4 rounded-xl">
+                        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Verifying credentials...</span>
+                    </div>
+
+                    <!-- SUBMIT BUTTON -->
+                    <button 
+                        type="submit"
+                        id="loginBtn"
+                        class="w-full bg-gradient-to-r from-primary to-secondary text-white py-3 rounded-xl text-lg font-bold hover:shadow-xl hover:shadow-primary/40 transition transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed btn-glow"
+                    >
+                        LOGIN TO DASHBOARD
+                    </button>
+
+                    <!-- FORGOT PASSWORD -->
+                    <p class="text-center text-gray-600">
+                        <a href="#" class="text-primary font-semibold hover:text-secondary transition hover:underline">Forgot your password?</a>
+                    </p>
+
+                    <!-- SECURITY INFO -->
+                    <div class="mt-8 pt-6 border-t border-gray-200">
+                        <p class="text-xs text-gray-500 flex items-start gap-2">
+                            <span class="text-xl mt-0.5">🔐</span>
+                            <span>This portal is restricted to authorized administrators only. All login attempts are monitored, logged, and reviewed. Unauthorized access will be flagged immediately.</span>
+                        </p>
+                    </div>
+                </form>
+
+                <!-- BACK TO HOME -->
+                <div class="mt-8 pt-6 border-t border-gray-200 space-y-3">
+                    <p class="text-sm text-gray-600 text-center">
+                        Not an admin? <a href="index.html" class="text-primary font-semibold hover:text-secondary transition hover:underline">Go to home</a>
+                    </p>
+                    <p class="text-sm text-gray-600 text-center">
+                        New admin account? <a href="admin-signup.html" class="text-orange-600 font-semibold hover:text-orange-700 transition hover:underline">Register as Admin</a>
+                    </p>
+                    <p class="text-sm text-gray-600 text-center">
+                        Need to create an account? <a href="signup.html" class="text-primary font-semibold hover:text-secondary transition hover:underline">Sign up here</a>
+                    </p>
+                    <p class="text-xs text-gray-500 text-center bg-gray-50 p-3 rounded-lg">
+                        💡 Admin accounts are created by system administrators. Contact your IT manager for admin <strong>access code</strong>.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+
+        document.getElementById('adminLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('adminEmail').value.trim();
+            const password = document.getElementById('adminPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Clear messages
+            document.getElementById('errorMsg').classList.add('hidden');
+            document.getElementById('successMsg').classList.add('hidden');
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            document.getElementById('loginBtn').disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+
+                // Success
+                document.getElementById('successMsg').classList.remove('hidden');
+                document.getElementById('loadingIndicator').classList.add('hidden');
+
+                // Save token
+                localStorage.setItem('adminToken', data.token);
+                if (rememberMe) {
+                    localStorage.setItem('adminEmail', email);
+                }
+
+                // Redirect
+                setTimeout(() => {
+                    window.location.href = 'Admin.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorText').textContent = error.message;
+                document.getElementById('errorMsg').classList.remove('hidden');
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('loginBtn').disabled = false;
+            }
+        });
+
+        // Load remembered email
+        window.addEventListener('DOMContentLoaded', () => {
+            const rememberedEmail = localStorage.getItem('adminEmail');
+            if (rememberedEmail) {
+                document.getElementById('adminEmail').value = rememberedEmail;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+    </script>
+</body>
+</html>

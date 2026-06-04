@@ -4,40 +4,214 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FixFlow IMS - Employee Dashboard</title>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#00b7a8',
-                        secondary: '#009fbe',
-                    }
-                }
-            }
-        }
-    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #fff;
         }
+
+        .gradient-sidebar {
+            background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);
+        }
+
         .glass {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .stat-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.36, 0, 0.66, -0.56);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 183, 168, 0.2);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 183, 168, 0.3);
+            border-color: rgba(0, 183, 168, 0.3);
         }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .nav-item:hover {
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 183, 168, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(0, 183, 168, 0.4); }
+        }
+
         .animate-slide {
             animation: slideIn 0.5s ease forwards;
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .activity-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 4px solid #00b7a8;
+            transition: all 0.3s ease;
+        }
+
+        .activity-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-left-color: #009fbe;
+            transform: translateX(5px);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            max-h: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b7a8, #009fbe);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .menu-icon {
+            display: inline-block;
+            width: 20px;
+        }
+
+        button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .badge-status {
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-received {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .badge-assigned {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+
+        .badge-progress {
+            background: rgba(249, 115, 22, 0.2);
+            color: #f97316;
+        }
+
+        .badge-resolved {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .badge-closed {
+            background: rgba(107, 114, 128, 0.2);
+            color: #d1d5db;
         }
     </style>
     <script defer src="Employee.js"></script>
@@ -46,165 +220,227 @@
 <body>
     <div class="flex min-h-screen">
         <!-- SIDEBAR -->
-        <aside class="w-64 bg-white shadow-lg p-6 overflow-y-auto border-r-2 border-primary/20">
+        <aside class="w-64 gradient-sidebar text-white shadow-2xl p-6 overflow-y-auto border-r-4 border-orange-500/20">
             <!-- LOGO -->
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-gradient-to-r from-primary to-secondary p-3 rounded-xl text-white text-2xl">⚡</div>
+            <div class="flex items-center gap-3 mb-10 group cursor-pointer">
+                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-2xl text-white text-3xl group-hover:bg-white/30 transition-all transform group-hover:scale-110">⚡</div>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">FixFlow</h1>
-                    <p class="text-xs text-gray-500">IMS</p>
+                    <h1 class="text-3xl font-bold text-white">FixFlow</h1>
+                    <p class="text-xs text-white/70">IMS Portal</p>
                 </div>
             </div>
 
             <!-- NAV MENU -->
-            <nav class="space-y-2 mb-8">
-                <a href="index.html" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold flex items-center gap-3 transition">
-                    <span>🏠</span> Home
+            <nav class="space-y-3 mb-8">
+                <a href="index.html" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">🏠</span> Home
                 </a>
-                <button class="w-full text-left px-4 py-3 rounded-lg bg-primary/20 text-primary font-bold flex items-center gap-3 transition">
-                    <span>📊</span> Dashboard
+                <button class="nav-item active w-full text-left px-4 py-3 rounded-2xl bg-white/20 text-white font-bold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">📊</span> Dashboard
                 </button>
-                <a href="report-issue.html" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold flex items-center gap-3 transition">
-                    <span>📝</span> Report Issue
+                <a href="report-issue.html" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">📝</span> Report Issue
                 </a>
-                <a href="my-issues.html" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold flex items-center gap-3 transition">
-                    <span>🎯</span> My Issues
+                <a href="my-issues.html" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">🎯</span> My Issues
                 </a>
-                <a href="Community_page.html" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold flex items-center gap-3 transition">
-                    <span>💬</span> Community
+                <a href="Community_page.html" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">💬</span> Community
                 </a>
-                <a href="profile.html" class="w-full text-left px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-100 font-semibold flex items-center gap-3 transition">
-                    <span>👤</span> Profile
+                <a href="profile.html" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">👤</span> Profile
                 </a>
             </nav>
 
             <!-- LOGOUT -->
-            <button id="logoutBtn" class="w-full px-4 py-3 rounded-lg font-bold text-white bg-red-500 hover:bg-red-600 transition flex items-center gap-3">
-                <span>🚪</span> Logout
-            </button>
+            <div class="mt-auto pt-8 border-t border-white/20">
+                <button id="logoutBtn" class="w-full px-4 py-3 bg-gradient-to-r from-red-500/80 to-red-600/80 hover:from-red-500 hover:to-red-600 text-white rounded-xl font-semibold transition-all transform hover:scale-105 flex items-center justify-center gap-2">
+                    <span>🚪</span> Logout
+                </button>
+            </div>
         </aside>
 
         <!-- MAIN CONTENT -->
-        <main class="flex-1 p-8 overflow-y-auto">
+        <main class="flex-1 p-8 overflow-y-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
             <!-- HEADER -->
-            <div class="mb-10 animate-slide">
-                <h2 class="text-4xl font-bold text-gray-900 mb-2">Welcome, <span id="welcomeName">Employee</span> 👋</h2>
-                <p class="text-gray-600 text-lg">Monitor your issues and stay updated in real-time</p>
+            <div class="mb-12 animate-slide">
+                <h1 class="text-5xl font-bold text-white mb-2">Welcome, <span id="welcomeName" class="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Employee</span> 👋</h1>
+                <p class="text-gray-300 text-lg">Monitor your issues and stay updated in real-time</p>
             </div>
 
             <!-- REAL-TIME STATS CARDS -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10" style="animation-delay: 0.1s;">
-                <div class="stat-card glass p-6 rounded-2xl border border-gray-200">
-                    <div class="flex justify-between items-start">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-2">Open Issues</p>
-                            <h3 class="text-4xl font-bold text-primary" id="openIssuesCount">0</h3>
+                            <p class="text-gray-300 font-semibold text-sm">Open Issues</p>
+                            <h3 class="text-5xl font-bold text-cyan-400 mt-3" id="openIssuesCount">0</h3>
                         </div>
-                        <span class="text-4xl">📋</span>
+                        <span class="text-5xl">📋</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 45%;"></div>
                     </div>
                 </div>
 
-                <div class="stat-card glass p-6 rounded-2xl border border-gray-200">
-                    <div class="flex justify-between items-start">
+                <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-2">In Progress</p>
-                            <h3 class="text-4xl font-bold text-secondary" id="inProgressCount">0</h3>
+                            <p class="text-gray-300 font-semibold text-sm">In Progress</p>
+                            <h3 class="text-5xl font-bold text-orange-400 mt-3" id="inProgressCount">0</h3>
                         </div>
-                        <span class="text-4xl">⚙️</span>
+                        <span class="text-5xl">⚙️</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-orange-500" style="width: 35%;"></div>
                     </div>
                 </div>
 
-                <div class="stat-card glass p-6 rounded-2xl border border-gray-200">
-                    <div class="flex justify-between items-start">
+                <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-2">Resolved</p>
-                            <h3 class="text-4xl font-bold text-green-600" id="resolvedCount">0</h3>
+                            <p class="text-gray-300 font-semibold text-sm">Resolved</p>
+                            <h3 class="text-5xl font-bold text-green-400 mt-3" id="resolvedCount">0</h3>
                         </div>
-                        <span class="text-4xl">✅</span>
+                        <span class="text-5xl">✅</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-green-500" style="width: 60%;"></div>
                     </div>
                 </div>
 
-                <div class="stat-card glass p-6 rounded-2xl border border-gray-200">
-                    <div class="flex justify-between items-start">
+                <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12 pulse-glow">
+                    <div class="flex justify-between items-start mb-4">
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-2">Total Issues</p>
-                            <h3 class="text-4xl font-bold text-orange-600" id="totalIssuesCount">0</h3>
+                            <p class="text-gray-300 font-semibold text-sm">Total Issues</p>
+                            <h3 class="text-5xl font-bold text-blue-400 mt-3" id="totalIssuesCount">0</h3>
                         </div>
-                        <span class="text-4xl">📊</span>
+                        <span class="text-5xl">📊</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-500" style="width: 100%;"></div>
                     </div>
                 </div>
             </div>
 
             <!-- RECENT ACTIVITY WITH TECHNICIAN DETAILS -->
-            <div class="glass p-8 rounded-2xl border border-gray-200" style="animation-delay: 0.2s;">
-                <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
+            <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all">
+                <h3 class="text-3xl font-bold text-white mb-8 flex items-center gap-3">
                     <span>📌</span> Recent Issues & Technician Details
                 </h3>
                 <div id="recentActivityContainer" class="space-y-4">
-                    <p class="text-gray-500 text-center py-12">Loading real-time data...</p>
+                    <div class="text-center py-12">
+                        <div class="inline-block animate-spin">⏳</div>
+                        <p class="text-gray-400 mt-3">Loading real-time data...</p>
+                    </div>
                 </div>
             </div>
 
             <!-- ISSUE DETAIL MODAL -->
-            <div id="issueModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                <div class="bg-white rounded-3xl shadow-2xl max-w-2xl w-full p-8 max-h-[90vh] overflow-y-auto">
+            <div id="issueModal" class="modal">
+                <div class="modal-content">
                     <!-- Close Button -->
-                    <button id="closeModalBtn" class="float-right text-gray-500 hover:text-gray-700 text-2xl font-bold">&times;</button>
+                    <button id="closeModalBtn" class="float-right text-gray-400 hover:text-gray-200 text-3xl font-bold transition-all">&times;</button>
                     
                     <!-- Issue Title -->
-                    <h2 id="modalTitle" class="text-3xl font-bold text-gray-900 mb-4 pr-8">Issue Title</h2>
+                    <h2 id="modalTitle" class="text-4xl font-bold text-white mb-6 pr-8">Issue Title</h2>
                     
                     <!-- Status Badge -->
-                    <div class="mb-6">
-                        <span id="modalStatus" class="px-4 py-2 rounded-full font-bold text-sm">Status</span>
+                    <div class="mb-8">
+                        <span id="modalStatus" class="badge-status">Status</span>
                     </div>
                     
                     <!-- Issue Details Section -->
-                    <div class="grid grid-cols-2 gap-6 mb-8">
+                    <div class="grid grid-cols-2 gap-6 mb-10 pb-10 border-b border-white/10">
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-1">Category</p>
-                            <p id="modalCategory" class="text-lg text-gray-900 font-bold">-</p>
+                            <p class="text-gray-400 text-sm font-semibold mb-2">Category</p>
+                            <p id="modalCategory" class="text-lg text-white font-bold">-</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-1">Priority</p>
-                            <p id="modalPriority" class="text-lg text-gray-900 font-bold">-</p>
+                            <p class="text-gray-400 text-sm font-semibold mb-2">Priority</p>
+                            <p id="modalPriority" class="text-lg text-white font-bold">-</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-1">Created</p>
-                            <p id="modalCreated" class="text-lg text-gray-900 font-bold">-</p>
+                            <p class="text-gray-400 text-sm font-semibold mb-2">Created</p>
+                            <p id="modalCreated" class="text-lg text-white font-bold">-</p>
                         </div>
                         <div>
-                            <p class="text-gray-600 text-sm font-semibold mb-1">Last Updated</p>
-                            <p id="modalUpdated" class="text-lg text-gray-900 font-bold">-</p>
+                            <p class="text-gray-400 text-sm font-semibold mb-2">Last Updated</p>
+                            <p id="modalUpdated" class="text-lg text-white font-bold">-</p>
                         </div>
                     </div>
                     
                     <!-- Description -->
-                    <div class="mb-8">
-                        <p class="text-gray-600 text-sm font-semibold mb-2">Description</p>
-                        <p id="modalDescription" class="text-gray-700 leading-relaxed">-</p>
+                    <div class="mb-10 pb-10 border-b border-white/10">
+                        <p class="text-gray-400 text-sm font-semibold mb-3">Description</p>
+                        <p id="modalDescription" class="text-gray-300 leading-relaxed">-</p>
                     </div>
                     
                     <!-- Technician Details Section -->
-                    <div class="border-t-2 border-gray-200 pt-6 mb-8">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">👨‍💼 Assigned Technician</h3>
-                        <div id="technicianSection" class="bg-gradient-to-r from-primary/10 to-secondary/10 p-6 rounded-2xl border-2 border-primary/20">
-                            <p id="technicianStatus" class="text-center text-gray-600 py-4">No technician assigned yet</p>
+                    <div class="mb-10 pb-10 border-b border-white/10">
+                        <h3 class="text-2xl font-bold text-white mb-6">👨‍💼 Assigned Technician</h3>
+                        <div id="technicianSection" class="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 p-6 rounded-2xl border-2 border-cyan-500/30 hover:border-cyan-500/50 transition-all">
+                            <p id="technicianStatus" class="text-center text-gray-400 py-4">No technician assigned yet</p>
+                            <div id="technicianDetails" class="hidden space-y-3">
+                                <p class="text-white"><span class="text-gray-400">Name:</span> <span id="modalTechnicianName" class="font-bold">-</span></p>
+                                <p class="text-white"><span class="text-gray-400">📧 Email:</span> <span id="modalTechnicianEmail" class="font-bold">-</span></p>
+                                <p class="text-white"><span class="text-gray-400">📞 Phone:</span> <span id="modalTechnicianPhone" class="font-bold">-</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Deadline Section -->
+                    <div class="mb-10 pb-10 border-b border-white/10">
+                        <h3 class="text-2xl font-bold text-white mb-6">⏰ Deadline & Progress</h3>
+                        <div class="space-y-6">
+                            <div class="bg-white/5 p-4 rounded-xl">
+                                <p class="text-gray-400 text-sm mb-2">Expected Completion</p>
+                                <p id="modalDeadline" class="text-white font-bold text-lg">-</p>
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-gray-400 text-sm">Progress</p>
+                                    <p id="modalProgressPercent" class="text-white font-bold">0%</p>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-4 overflow-hidden">
+                                    <div id="modalProgressBar" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-4 rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Rating Section -->
+                    <div class="mb-10 pb-10 border-b border-white/10" id="ratingSection" style="display: none;">
+                        <h3 class="text-2xl font-bold text-white mb-6">⭐ Rate Technician</h3>
+                        <div class="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-6 rounded-xl border border-yellow-500/20 space-y-4">
+                            <div>
+                                <p class="text-gray-400 text-sm mb-3">How satisfied are you?</p>
+                                <div class="flex gap-3 text-4xl">
+                                    <button onclick="setRating(1)" class="hover:scale-125 transition" id="star1">☆</button>
+                                    <button onclick="setRating(2)" class="hover:scale-125 transition" id="star2">☆</button>
+                                    <button onclick="setRating(3)" class="hover:scale-125 transition" id="star3">☆</button>
+                                    <button onclick="setRating(4)" class="hover:scale-125 transition" id="star4">☆</button>
+                                    <button onclick="setRating(5)" class="hover:scale-125 transition" id="star5">☆</button>
+                                </div>
+                                <p id="ratingValue" class="text-white font-bold mt-2">Select rating</p>
+                            </div>
+                            <textarea id="ratingReview" placeholder="Share your feedback (optional)..." class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-400"></textarea>
+                            <button onclick="submitRating()" class="w-full px-4 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-yellow-500/50 transition-all">✅ Submit Rating</button>
                         </div>
                     </div>
                     
                     <!-- Progress Timeline -->
-                    <div class="border-t-2 border-gray-200 pt-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">📈 Progress Timeline</h3>
+                    <div>
+                        <h3 class="text-2xl font-bold text-white mb-6">📈 Progress Timeline</h3>
                         <div id="timelineContainer" class="space-y-4">
-                            <p class="text-gray-500 text-center py-4">No progress updates yet</p>
+                            <p class="text-gray-400 text-center py-4">No progress updates yet</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <footer class="text-center text-gray-600 mt-8 text-sm">
-                FixFlow IMS © 2025 - Auto-refresh every 5 seconds
+            <footer class="text-center text-gray-500 mt-12 text-sm">
+                FixFlow IMS © 2026 - Auto-refresh every 5 seconds
             </footer>
         </main>
     </div>

@@ -32,6 +32,17 @@ const userSchema = new mongoose.Schema(
       default: 'employee'
     },
 
+    organizationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Organization',
+      default: null  // Initially null until approved by org admin
+    },
+
+    isActive: {
+      type: Boolean,
+      default: false  // Initially inactive, activated after admin approval
+    },
+
     department: {
       type: String,
       default: null
@@ -43,9 +54,11 @@ const userSchema = new mongoose.Schema(
     },
 
     // Technician specific fields
-    category: {
-      type: String,
-      default: null  // e.g., 'Electrical', 'Plumbing', 'HVAC', 'Network'
+    professionType: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'ProfessionType',
+      default: null
+      // Reference to profession type (IT Support, Electrical, etc.)
     },
 
     skills: {

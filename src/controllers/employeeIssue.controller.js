@@ -5,6 +5,7 @@ const Issue = require('../models/issue.model');
 const User = require('../models/user.model');
 const { assignTechnicianToIssue, unassignTechnicianFromIssue } = require('../services/issueAssignment.service');
 const { initializeSLA, recordFirstResponse, recordResolution, calculateRemainingTime } = require('../services/sla.service');
+const { categorizeIssue } = require('../services/aiCategorization.service');
 
 exports.createIssue = async (req, res) => {
   try {
@@ -201,6 +202,41 @@ exports.getAllLiveIssues = async (req, res) => {
     res.status(200).json({ issues });
   } catch (err) {
     console.error("getAllLiveIssues error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+/**
+ * 🤖 AI CATEGORIZATION ENDPOINT
+ * Analyzes issue title and description to suggest category and priority
+ * Uses Hugging Face NLP with keyword fallback
+ */
+exports.getAICategorization = async (req, res) => {
+  try {
+    const { title, description } = req.body;
+
+    if (!title || !description) {
+      return res.status(400).json({ 
+        message: "Title and description are required" 
+      });
+    }
+
+    // Get AI suggestions (now async with Hugging Face)
+    const result = await categorizeIssue(title, description);
+
+    if (!result.success) {
+      return res.status(400).json({
+        message: result.message
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      suggestion: result.suggestion
+    });
+
+  } catch (err) {
+    console.error("getAICategorization error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

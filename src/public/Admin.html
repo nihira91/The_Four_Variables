@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FixFlow IMS - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        * {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            color: #fff;
+        }
+
+        .gradient-sidebar {
+            background: linear-gradient(180deg, #00b7a8 0%, #009fbe 100%);
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.36, 0, 0.66, -0.56);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0, 183, 168, 0.3);
+            border-color: rgba(0, 183, 168, 0.3);
+        }
+
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .nav-item:hover {
+            transform: translateX(5px);
+        }
+
+        .nav-item.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 183, 168, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(0, 183, 168, 0.4); }
+        }
+
+        .animate-slide {
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 249, 255, 0.95) 100%);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b7a8, #009fbe);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .table-row:hover {
+            background: rgba(0, 183, 168, 0.05);
+        }
+
+        .tab-content {
+            animation: slideIn 0.3s ease;
+        }
+
+        button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .menu-icon {
+            display: inline-block;
+            width: 20px;
+        }
+    </style>
+    <script defer src="Admin.js"></script>
+</head>
+
+<body>
+    <div class="flex min-h-screen">
+        <!-- SIDEBAR -->
+        <aside class="w-64 gradient-sidebar text-white shadow-2xl p-6 overflow-y-auto border-r-4 border-orange-500/20">
+            <!-- LOGO -->
+            <div class="flex items-center gap-3 mb-10 group cursor-pointer">
+                <div class="bg-white/20 backdrop-blur-sm p-3 rounded-2xl text-white text-3xl group-hover:bg-white/30 transition-all transform group-hover:scale-110">⚡</div>
+                <div>
+                    <h1 class="text-3xl font-bold text-white">FixFlow</h1>
+                    <p class="text-xs text-white/70">Control Center</p>
+                </div>
+            </div>
+
+            <!-- NAV MENU -->
+            <nav class="space-y-3 mb-8">
+                <a href="index.html" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">🏠</span> Home
+                </a>
+                <button onclick="switchTab('dashboard')" class="nav-item active w-full text-left px-4 py-3 rounded-2xl bg-white/20 text-white font-bold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">📊</span> Overview
+                </button>
+                <button onclick="switchTab('issues')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">🎫</span> All Issues
+                </button>
+                <button onclick="switchTab('bulk-actions')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">⚙️</span> Bulk Actions
+                </button>
+                <button onclick="switchTab('users')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">👥</span> Users
+                </button>
+                <button onclick="switchTab('pending-requests')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">⏳</span> Pending Requests
+                </button>
+                <button onclick="switchTab('sla')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">⏱️</span> SLA
+                </button>
+                <button onclick="switchTab('escalations')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">🚨</span> Escalations
+                </button>
+                <button onclick="switchTab('notifications')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">🔔</span> Alerts
+                </button>
+                <button onclick="switchTab('settings')" class="nav-item w-full text-left px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/15 font-semibold flex items-center gap-3 transition-all">
+                    <span class="menu-icon">⚙️</span> Settings
+                </button>
+            </nav>
+
+            <!-- PROFILE -->
+            <div class="mt-auto pt-8 border-t border-white/20">
+                <div class="bg-white/10 rounded-2xl p-4 mb-4">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 rounded-full bg-white/30 flex items-center justify-center text-white text-xl font-bold">👨‍💼</div>
+                        <div>
+                            <p class="text-sm font-semibold text-white" id="adminName">Admin</p>
+                            <p class="text-xs text-white/70">Administrator</p>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="logout()" class="w-full px-4 py-3 bg-white/20 hover:bg-white/30 text-white rounded-xl font-semibold transition-all transform hover:scale-105">
+                    🚪 Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 overflow-auto bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+            <div class="p-8">
+                <!-- HEADER -->
+                <div class="mb-12">
+                    <h1 class="text-5xl font-bold text-white mb-2">Admin Dashboard</h1>
+                    <p class="text-gray-300 text-lg">Welcome back! Manage your support system like a pro.</p>
+                </div>
+
+                <!-- DASHBOARD TAB -->
+                <div id="dashboard" class="tab-content">
+                    <!-- STATS GRID -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                        <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <p class="text-gray-300 font-semibold text-sm">Total Issues</p>
+                                    <p class="text-5xl font-bold text-white mt-3" id="totalIssues">0</p>
+                                </div>
+                                <span class="text-5xl">📊</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%;"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-3">All reported issues</p>
+                        </div>
+
+                        <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <p class="text-gray-300 font-semibold text-sm">Resolved</p>
+                                    <p class="text-5xl font-bold text-green-400 mt-3" id="resolvedIssues">0</p>
+                                </div>
+                                <span class="text-5xl">✅</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-green-500" style="width: 45%;"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-3">Successfully closed</p>
+                        </div>
+
+                        <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <p class="text-gray-300 font-semibold text-sm">Pending</p>
+                                    <p class="text-5xl font-bold text-yellow-400 mt-3" id="pendingIssues">0</p>
+                                </div>
+                                <span class="text-5xl">⏳</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-yellow-500" style="width: 35%;"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-3">In progress</p>
+                        </div>
+
+                        <div class="stat-card glass rounded-2xl p-8 hover:bg-white/12 pulse-glow">
+                            <div class="flex justify-between items-start mb-6">
+                                <div>
+                                    <p class="text-gray-300 font-semibold text-sm">Overdue</p>
+                                    <p class="text-5xl font-bold text-red-400 mt-3" id="overdueIssues">0</p>
+                                </div>
+                                <span class="text-5xl">🚨</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-red-500" style="width: 20%;"></div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-3">SLA breached</p>
+                        </div>
+                    </div>
+
+                    <!-- USER STATS -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all transform hover:scale-105">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-white">👨‍💼 Employees</h3>
+                                <div class="text-3xl">👥</div>
+                            </div>
+                            <p class="text-4xl font-bold text-cyan-400" id="totalEmployees">0</p>
+                            <p class="text-sm text-gray-400 mt-4">Active on system</p>
+                        </div>
+
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all transform hover:scale-105">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-white">🔧 Technicians</h3>
+                                <div class="text-3xl">⚙️</div>
+                            </div>
+                            <p class="text-4xl font-bold text-blue-400" id="totalTechnicians">0</p>
+                            <p class="text-sm text-gray-400 mt-4">Available now</p>
+                        </div>
+
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all transform hover:scale-105">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-lg font-bold text-white">📈 Response Time</h3>
+                                <div class="text-3xl">⚡</div>
+                            </div>
+                            <p class="text-4xl font-bold text-orange-400" id="avgResponseTime">0h</p>
+                            <p class="text-sm text-gray-400 mt-4">Average SLA time</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALL ISSUES TAB -->
+                <div id="issues" class="tab-content hidden">
+                    <div class="glass rounded-2xl p-8">
+                        <h2 class="text-3xl font-bold text-white mb-8">All Issues</h2>
+                        
+                        <!-- FILTERS -->
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                            <input type="text" placeholder="Search issues..." id="issueSearch" class="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400">
+                            <select id="statusFilter" class="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400">
+                                <option value="" class="bg-slate-900">All Status</option>
+                                <option value="Received" class="bg-slate-900">Received</option>
+                                <option value="Assigned" class="bg-slate-900">Assigned</option>
+                                <option value="In Progress" class="bg-slate-900">In Progress</option>
+                                <option value="Resolved" class="bg-slate-900">Resolved</option>
+                                <option value="Closed" class="bg-slate-900">Closed</option>
+                            </select>
+                            <select id="priorityFilter" class="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400">
+                                <option value="" class="bg-slate-900">All Priority</option>
+                                <option value="low" class="bg-slate-900">Low</option>
+                                <option value="medium" class="bg-slate-900">Medium</option>
+                                <option value="high" class="bg-slate-900">High</option>
+                                <option value="critical" class="bg-slate-900">Critical</option>
+                            </select>
+                            <button onclick="loadIssues()" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">🔍 Filter</button>
+                        </div>
+
+                        <!-- ISSUES TABLE -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-cyan-500/30">
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">ID</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Title</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Status</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Priority</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Assigned To</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="issuesTable">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-8 text-gray-400">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BULK ACTIONS TAB -->
+                <div id="bulk-actions" class="tab-content hidden">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- AUTO ASSIGNMENT INFO -->
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all col-span-2">
+                            <h2 class="text-2xl font-bold text-white mb-4">⚡ Automatic Technician Assignment</h2>
+                            <p class="text-gray-300 mb-4">Issues are now automatically assigned to technicians based on:</p>
+                            <ul class="text-gray-300 space-y-2 ml-4 mb-6">
+                                <li>✅ <span class="font-semibold">Priority Level</span> - Critical/High priority issues get priority</li>
+                                <li>✅ <span class="font-semibold">Category Match</span> - Issues assigned to technicians with matching expertise</li>
+                                <li>✅ <span class="font-semibold">Availability</span> - Load-balanced among available technicians</li>
+                                <li>✅ <span class="font-semibold">Current Workload</span> - Technicians with fewer active tasks get priority</li>
+                            </ul>
+                            <div class="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-l-4 border-green-500 p-4 rounded-lg">
+                                <p class="text-green-300">💡 <span class="font-semibold">Tip:</span> Use the Issues tab to view assignments. Admin can remove technician from any task in the Bulk Actions section.</p>
+                            </div>
+                        </div>
+
+                        <!-- REMOVE TECHNICIAN FROM TASK -->
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all">
+                            <h2 class="text-2xl font-bold text-white mb-4">➖ Remove Technician Assignment</h2>
+                            <p class="text-gray-300 mb-6">Remove a technician from an assigned task</p>
+                            <input type="text" id="removeIssueId" placeholder="Enter Issue ID" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 mb-4 focus:outline-none focus:border-cyan-400">
+                            <textarea id="reassignReason" placeholder="Reason for removal (optional)" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 mb-4 focus:outline-none focus:border-cyan-400 h-20"></textarea>
+                            <button onclick="removeTechnicianAssignment()" class="w-full px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-red-500/50 transition-all">Remove Assignment</button>
+                        </div>
+
+                        <!-- BULK CLOSE -->
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all">
+                            <h2 class="text-2xl font-bold text-white mb-4">✅ Bulk Close</h2>
+                            <p class="text-gray-300 mb-6">Close multiple issues at once</p>
+                            <textarea id="bulkCloseIds" placeholder="Enter issue IDs (comma-separated)" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 mb-4 focus:outline-none focus:border-cyan-400 h-24"></textarea>
+                            <textarea id="bulkCloseReason" placeholder="Closure reason..." class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 mb-4 focus:outline-none focus:border-cyan-400 h-16"></textarea>
+                            <button onclick="bulkClose()" class="w-full px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-green-500/50 transition-all">Close Issues</button>
+                        </div>
+
+                        <!-- EXPORT REPORTS -->
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all">
+                            <h2 class="text-2xl font-bold text-white mb-4">📥 Export Reports</h2>
+                            <p class="text-gray-300 mb-6">Export issues to CSV or PDF</p>
+                            <select id="exportStatus" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white mb-4 focus:outline-none focus:border-cyan-400">
+                                <option value="" class="bg-slate-900">All Issues</option>
+                                <option value="Received" class="bg-slate-900">Received</option>
+                                <option value="Assigned" class="bg-slate-900">Assigned</option>
+                                <option value="In Progress" class="bg-slate-900">In Progress</option>
+                                <option value="Resolved" class="bg-slate-900">Resolved</option>
+                                <option value="Closed" class="bg-slate-900">Closed</option>
+                            </select>
+                            <div class="flex gap-3">
+                                <button onclick="exportReport('csv')" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all">📊 CSV</button>
+                                <button onclick="exportReport('pdf')" class="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-red-500/50 transition-all">📄 PDF</button>
+                            </div>
+                        </div>
+
+                        <!-- BULK ESCALATE -->
+                        <div class="glass rounded-2xl p-8 hover:bg-white/12 transition-all">
+                            <h2 class="text-2xl font-bold text-white mb-4">🚨 Escalate Issues</h2>
+                            <p class="text-gray-300 mb-6">Escalate unresolved high-priority issues</p>
+                            <select id="escalatePriority" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white mb-4 focus:outline-none focus:border-cyan-400">
+                                <option value="" class="bg-slate-900">Select Priority</option>
+                                <option value="high" class="bg-slate-900">High</option>
+                                <option value="critical" class="bg-slate-900">Critical</option>
+                            </select>
+                            <button onclick="escalateIssues()" class="w-full px-6 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-orange-500/50 transition-all">Escalate Issues</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USER MANAGEMENT TAB -->
+                <div id="users" class="tab-content hidden">
+                    <div class="glass rounded-2xl p-8">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-3xl font-bold text-white">👥 User Management</h2>
+                            <button onclick="openUserModal()" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">+ Add User</button>
+                        </div>
+
+                        <!-- USER TABS -->
+                        <div class="flex gap-6 mb-8 border-b border-white/10">
+                            <button onclick="switchUserTab('employees')" class="px-4 py-3 font-semibold text-cyan-400 border-b-2 border-cyan-400">Employees</button>
+                            <button onclick="switchUserTab('technicians')" class="px-4 py-3 font-semibold text-gray-400 hover:text-white">Technicians</button>
+                        </div>
+
+                        <!-- USERS TABLE -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-cyan-500/30">
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Name</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Email</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Department</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Status</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="usersTable">
+                                    <tr>
+                                        <td colspan="5" class="text-center py-8 text-gray-400">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PENDING REQUESTS TAB -->
+                <div id="pending-requests" class="tab-content hidden">
+                    <div class="glass rounded-2xl p-8">
+                        <div class="flex justify-between items-center mb-8">
+                            <h2 class="text-3xl font-bold text-white">⏳ Pending Registration Requests</h2>
+                            <button onclick="loadPendingRequests()" class="px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">🔄 Refresh</button>
+                        </div>
+
+                        <!-- PENDING REQUESTS TABS -->
+                        <div class="flex gap-6 mb-8 border-b border-white/10">
+                            <button onclick="filterPendingRequests('all')" class="px-4 py-3 font-semibold text-cyan-400 border-b-2 border-cyan-400">All (<span id="allCount">0</span>)</button>
+                            <button onclick="filterPendingRequests('employee')" class="px-4 py-3 font-semibold text-gray-400 hover:text-white">Employees (<span id="employeeCount">0</span>)</button>
+                            <button onclick="filterPendingRequests('technician')" class="px-4 py-3 font-semibold text-gray-400 hover:text-white">Technicians (<span id="technicianCount">0</span>)</button>
+                        </div>
+
+                        <!-- PENDING REQUESTS TABLE -->
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-cyan-500/30">
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Name</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Email</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Role</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Department</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Requested</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendingRequestsTable">
+                                    <tr>
+                                        <td colspan="6" class="text-center py-8 text-gray-400">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SLA TRACKING TAB -->
+                <div id="sla" class="tab-content hidden">
+                    <div class="glass rounded-2xl p-8">
+                        <h2 class="text-3xl font-bold text-white mb-8">⏱️ SLA Tracking</h2>
+                        
+                        <!-- SLA METRICS -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                            <div class="rounded-2xl p-8 bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/30 hover:border-green-500/50 transition-all">
+                                <p class="text-gray-300 font-semibold mb-3">✅ On Schedule</p>
+                                <p class="text-5xl font-bold text-green-400" id="slaOnTime">0</p>
+                            </div>
+                            <div class="rounded-2xl p-8 bg-gradient-to-br from-yellow-500/10 to-yellow-500/5 border-2 border-yellow-500/30 hover:border-yellow-500/50 transition-all">
+                                <p class="text-gray-300 font-semibold mb-3">⚠️ At Risk</p>
+                                <p class="text-5xl font-bold text-yellow-400" id="slaAtRisk">0</p>
+                            </div>
+                            <div class="rounded-2xl p-8 bg-gradient-to-br from-red-500/10 to-red-500/5 border-2 border-red-500/30 hover:border-red-500/50 transition-all">
+                                <p class="text-gray-300 font-semibold mb-3">❌ Breached</p>
+                                <p class="text-5xl font-bold text-red-400" id="slaBreached">0</p>
+                            </div>
+                        </div>
+
+                        <!-- BREACHED SLAs TABLE -->
+                        <h3 class="text-2xl font-bold text-white mb-6">At-Risk Issues (70%+ deadline used)</h3>
+                        <div id="atRiskIssuesContainer" class="space-y-3 mb-12">
+                            <p class="text-gray-400">Loading at-risk issues...</p>
+                        </div>
+                        
+                        <!-- WORKLOAD SUMMARY -->
+                        <h3 class="text-2xl font-bold text-white mb-6">Technician Workload</h3>
+                        <div id="workloadSummaryContainer" class="space-y-3 mb-12">
+                            <p class="text-gray-400">Loading workload summary...</p>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-white mb-6">Breached SLAs Details</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b-2 border-cyan-500/30">
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Issue ID</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Title</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Overdue By</th>
+                                        <th class="text-left py-4 px-4 font-bold text-gray-200">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="slaBreachedTable">
+                                    <tr>
+                                        <td colspan="4" class="text-center py-8 text-gray-400">No breached SLAs</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ESCALATIONS TAB -->
+                <div id="escalations" class="tab-content hidden">
+                    <div class="glass rounded-2xl p-8">
+                        <h2 class="text-3xl font-bold text-white mb-8">🚨 Escalation Workflows</h2>
+                        
+                        <div class="space-y-4">
+                            <div class="p-6 border-l-4 border-orange-500 bg-orange-500/10 rounded-lg hover:bg-orange-500/15 transition-all">
+                                <h3 class="font-bold text-orange-300 mb-3 text-lg">Auto-Escalate Unresolved Issues</h3>
+                                <p class="text-sm text-orange-200 mb-4">Automatically escalate issues not resolved within SLA time</p>
+                                <div class="flex gap-3">
+                                    <input type="number" id="escalateHours" placeholder="Hours before escalation" class="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-400">
+                                    <button onclick="setupAutoEscalation()" class="px-6 py-2 bg-orange-500 text-white rounded-lg font-semibold hover:bg-orange-600 transition-all">Setup</button>
+                                </div>
+                            </div>
+
+                            <div class="p-6 border-l-4 border-red-500 bg-red-500/10 rounded-lg hover:bg-red-500/15 transition-all">
+                                <h3 class="font-bold text-red-300 mb-3 text-lg">High-Priority Auto-Escalate</h3>
+                                <p class="text-sm text-red-200 mb-4">Critical issues with no progress in specified hours</p>
+                                <div class="flex gap-3">
+                                    <input type="number" id="escalateCriticalHours" placeholder="Hours before escalation" class="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-400">
+                                    <button onclick="setupCriticalAutoEscalation()" class="px-6 py-2 bg-red-500 text-white rounded-lg font-semibold hover:bg-red-600 transition-all">Setup</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-white mt-8 mb-6">Recent Escalations</h3>
+                        <div id="escalationsLog" class="space-y-3">
+                            <p class="text-gray-400">No escalations yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS TAB -->
+                <div id="settings" class="tab-content hidden">
+                    <div class="glass rounded-2xl p-8">
+                        <h2 class="text-3xl font-bold text-white mb-8">⚙️ System Settings</h2>
+
+                        <div class="space-y-6">
+                            <div class="pb-8 border-b border-white/10">
+                                <h3 class="text-2xl font-bold text-white mb-6">SLA Configuration</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-300 mb-3">Response Time (hours)</label>
+                                        <input type="number" id="slaResponseTime" value="4" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-300 mb-3">Resolution Time (hours)</label>
+                                        <input type="number" id="slaResolutionTime" value="24" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="pb-8 border-b border-white/10">
+                                <h3 class="text-2xl font-bold text-white mb-6">Email Notifications</h3>
+                                <div class="space-y-4">
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <input type="checkbox" checked class="w-5 h-5 rounded cursor-pointer accent-cyan-400">
+                                        <span class="text-gray-300 group-hover:text-white transition-all">Send email on issue assignment</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <input type="checkbox" checked class="w-5 h-5 rounded cursor-pointer accent-cyan-400">
+                                        <span class="text-gray-300 group-hover:text-white transition-all">Send email on SLA breach</span>
+                                    </label>
+                                    <label class="flex items-center gap-3 cursor-pointer group">
+                                        <input type="checkbox" checked class="w-5 h-5 rounded cursor-pointer accent-cyan-400">
+                                        <span class="text-gray-300 group-hover:text-white transition-all">Send daily summary report</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 class="text-2xl font-bold text-white mb-6">System Information</h3>
+                                <div class="grid grid-cols-2 gap-6">
+                                    <div class="p-6 bg-white/5 rounded-lg border border-white/10">
+                                        <p class="text-sm text-gray-400">System Version</p>
+                                        <p class="text-2xl font-bold text-cyan-400 mt-3">1.0.0</p>
+                                    </div>
+                                    <div class="p-6 bg-white/5 rounded-lg border border-white/10">
+                                        <p class="text-sm text-gray-400">Last Updated</p>
+                                        <p class="text-2xl font-bold text-cyan-400 mt-3" id="lastUpdated">-</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="saveSettings()" class="mt-8 w-full px-6 py-4 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all text-lg">💾 Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MANUAL ASSIGNMENT MODAL -->
+    <div id="manualAssignmentModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full border border-white/10">
+            <!-- Modal Header -->
+            <div class="bg-gradient-to-r from-slate-900 to-slate-800 p-6 border-b border-white/10 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-white">Manually Assign Issue</h2>
+                <button onclick="closeManualAssignmentModal()" class="text-gray-400 hover:text-white text-2xl">✕</button>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="p-8 space-y-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Issue ID</label>
+                    <input type="text" id="assignmentIssueId" placeholder="Enter issue ID" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Select Technician</label>
+                    <select id="assignmentTechnician" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-cyan-400">
+                        <option value="" class="bg-slate-900">Loading technicians...</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-300 mb-2">Assignment Reason (optional)</label>
+                    <textarea id="assignmentReason" placeholder="Why are you assigning this manually?" class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-cyan-400 h-20"></textarea>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="submitManualAssignment()" class="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg hover:shadow-cyan-500/50 transition-all">Assign Issue</button>
+                    <button onclick="closeManualAssignmentModal()" class="flex-1 px-6 py-3 bg-gray-500 text-white rounded-lg font-semibold hover:bg-gray-600 transition-all">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- USER MODAL -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold text-gray-900">Add New User</h2>
+                <button onclick="closeUserModal()" class="text-gray-500 text-4xl hover:text-gray-900 transition-all">&times;</button>
+            </div>
+
+            <form onsubmit="addUser(event)">
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name</label>
+                        <input type="text" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-cyan-500 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                        <input type="email" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-cyan-500 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Role</label>
+                        <select required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-cyan-500 font-semibold">
+                            <option value="">Select Role</option>
+                            <option value="employee">Employee</option>
+                            <option value="technician">Technician</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Department</label>
+                        <input type="text" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-cyan-500 font-semibold">
+                    </div>
+                    <div class="flex gap-3 mt-8">
+                        <button type="submit" class="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all">Add User</button>
+                        <button type="button" onclick="closeUserModal()" class="flex-1 px-6 py-3 bg-gray-300 text-gray-900 rounded-lg font-semibold hover:bg-gray-400 transition-all">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

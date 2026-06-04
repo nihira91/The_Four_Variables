@@ -97,9 +97,12 @@ const issueSchema = new mongoose.Schema(
       trim: true
     },
 
-    category: {
+    issueType: {
       type: String,
-      required: true
+      default: "General"
+      // Generic: "Network Issue", "Hardware", "Software", "Maintenance", etc.
+      // Hospital: "Equipment Issue", "Infection Control", "Patient Complaint"
+      // Manufacturing: "Production Stop", "Safety Issue", "Quality Issue"
     },
 
     priority: {
@@ -129,6 +132,26 @@ const issueSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       default: null
+    },
+
+    assignedAt: {
+      type: Date,
+      default: null
+      // Kab technician assign hua
+    },
+
+    deadline: {
+      type: Date,
+      default: null
+      // SLA ke basis par calculate hoga
+    },
+
+    progress: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0
+      // 0 = not started, 50 = half done, 100 = completed
     },
 
     /** ✅ SINGLE SOURCE OF TRUTH */

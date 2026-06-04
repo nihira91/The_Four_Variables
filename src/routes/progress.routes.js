@@ -6,7 +6,7 @@
 const express = require('express');
 const router = express.Router();
 const progressController = require('../controllers/progress.controller');
-const { protect } = require('../middlewares/authmiddleware');
+const protect = require('../middlewares/authmiddleware');
 
 // 📝 ADD PROGRESS UPDATE (Technician only)
 router.post('/add', protect, progressController.addProgressUpdate);

@@ -71,6 +71,66 @@ app.use(express.static(__dirname + '/public'));
 console.log("✔ Static files serving from /public");
 
 /* =======================
+   ADMIN ROUTES
+======================= */
+console.log("🟡 Registering Admin Routes");
+
+try {
+  const adminAuthRoutes = require("./routes/adminAuthRoutes");
+  app.use("/api/admin/auth", adminAuthRoutes);
+  console.log("✔ adminAuthRoutes.js");
+} catch (err) {
+  console.log("❌ adminAuthRoutes.js missing:", err.message);
+}
+
+try {
+  const adminRoutes = require("./routes/adminRoutes");
+  app.use("/api/admin", adminRoutes);
+  console.log("✔ adminRoutes.js");
+} catch (err) {
+  console.log("❌ adminRoutes.js missing:", err.message);
+}
+
+/* =======================
+   PROFESSION TYPE ROUTES
+======================= */
+console.log("🟡 Registering Profession Type Routes");
+
+try {
+  const professionTypeRoutes = require("./routes/professionType.routes");
+  app.use("/api/profession-types", professionTypeRoutes);
+  console.log("✔ professionType.routes.js");
+} catch (err) {
+  console.log("❌ professionType.routes.js missing:", err.message);
+}
+
+/* =======================
+   ASSIGNMENT ROUTES
+======================= */
+console.log("🟡 Registering Assignment Routes");
+
+try {
+  const assignmentRoutes = require("./routes/assignment.routes");
+  app.use("/api/assignments", assignmentRoutes);
+  console.log("✔ assignment.routes.js");
+} catch (err) {
+  console.log("❌ assignment.routes.js missing:", err.message);
+}
+
+/* =======================
+   UNIFIED NOTIFICATIONS ROUTES
+======================= */
+console.log("🟡 Registering Notifications Routes");
+
+try {
+  const notificationsRoutes = require("./routes/notifications.routes");
+  app.use("/api/notifications", notificationsRoutes);
+  console.log("✔ notifications.routes.js");
+} catch (err) {
+  console.log("❌ notifications.routes.js missing:", err.message);
+}
+
+/* =======================
    EMPLOYEE ROUTES
 ======================= */
 console.log("🟡 Registering Employee Routes");
@@ -194,6 +254,19 @@ try {
   console.log("✔ progress.routes.js");
 } catch (err) {
   console.log("❌ progress.routes.js missing:", err.message);
+}
+
+/* =======================
+   ORGANIZATION ROUTES
+======================= */
+console.log("🟡 Registering Organization Routes");
+
+try {
+  const organizationRoutes = require("./routes/organization.routes");
+  app.use("/api/organization", organizationRoutes);
+  console.log("✔ organization.routes.js");
+} catch (err) {
+  console.log("❌ organization.routes.js missing:", err.message);
 }
 
 /* =======================
